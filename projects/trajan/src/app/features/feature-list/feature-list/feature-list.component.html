@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1 rtl class="main-heading">{{ 'anms.features.title' | translate }}</h1>
+    </div>
+  </div>
+  <div *ngIf="receiptCategories$ | async as receiptCategories; else loading" class="row">
+    <div
+      *ngFor="let receiptCategory of receiptCategories; let i = index"
+      class="col-md-12"
+      [ngClass]="routeAnimationsElements"
+    >
+      <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ receiptCategory.name }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+      
+          <mat-card
+            *ngFor="let receipt of (getReceiptsOfReceiptCategory(receiptCategory.name) | async)"
+            (click)="onContentItemClick(receipt.uuid)"
+          >
+            <mat-card-title rtl>
+                {{ receipt.fields.name }}
+              </mat-card-title>
+            <mat-card-subtitle rtl>
+              {{ receipt.fields.text_teaser }}
+            </mat-card-subtitle>
+            <img mat-card-image [src]="getNodeFieldBinary( receipt.uuid, 'thumbnail' )">
+          </mat-card>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+  <ng-template #loading>
+    Loading...
+  </ng-template>
+</div>

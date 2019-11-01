@@ -1,0 +1,22 @@
+<div *ngIf="(receipt$ | async); let receipt" class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1 rtl class="main-heading">{{ 'anms.title.receipt' | translate }}</h1>
+    </div>
+  </div>
+  <div class="row align-items-end">
+    <div class="col-md-12 col-lg-12" [ngClass]="routeAnimationsElements">
+      <mat-card>
+        <mat-card-title rtl>
+            {{ receipt.fields.name }}
+          </mat-card-title>
+        <mat-card-subtitle rtl>
+          {{ receipt.fields.text_teaser }}
+        </mat-card-subtitle>
+        <img mat-card-image [src]="getNodeFieldBinary( receipt.uuid, 'thumbnail' )">
+        <mat-card-content [innerHtml]="receipt.fields.content">
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
