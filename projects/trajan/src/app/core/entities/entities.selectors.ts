@@ -12,3 +12,13 @@ export const selectEntitiesReceipts = createSelector(
   selectEntities,
   (state: EntitiesState) => state.receipt
 );
+
+export const selectEntitiesTags = createSelector(
+  selectEntities,
+  (state: EntitiesState) => state.tag
+);
+
+export const selectEntitiesTagFamilies = createSelector(
+  selectEntities,
+  (state: EntitiesState) => state.tagFamily
+);
