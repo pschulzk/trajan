@@ -25,6 +25,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatSliderModule } from '@angular/material/';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material';
+import { SwiperModule } from 'ngx-swiper-wrapper';
+import { SWIPER_CONFIG } from 'ngx-swiper-wrapper';
+import { SwiperConfigInterface } from 'ngx-swiper-wrapper';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -99,6 +102,11 @@ import { ContentApiService } from './providers/content-api/content-api.service';
 import { ContentDataService } from './providers/content-data/content-data.service';
 import { HttpClientModule } from '@angular/common/http';
 
+const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
+  direction: 'horizontal',
+  slidesPerView: 'auto'
+};
+
 @NgModule({
   imports: [
     CommonModule,
@@ -125,6 +133,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatSnackBarModule,
     MatSlideToggleModule,
     MatDividerModule,
+    SwiperModule,
 
     FontAwesomeModule
   ],
@@ -133,7 +142,14 @@ import { HttpClientModule } from '@angular/common/http';
     BigInputActionComponent,
     RtlSupportDirective
   ],
-  providers: [ContentApiService, ContentDataService],
+  providers: [
+    ContentApiService,
+    ContentDataService,
+    {
+      provide: SWIPER_CONFIG,
+      useValue: DEFAULT_SWIPER_CONFIG
+    }
+  ],
   exports: [
     CommonModule,
     FormsModule,
@@ -162,6 +178,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatSliderModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    SwiperModule,
 
     FontAwesomeModule,
 

@@ -1,4 +1,4 @@
-@import '../../../../styles-variables';
+@import './styles-variables';
 
 .container {
   margin-top: 20px;
@@ -11,9 +11,11 @@
 
 mat-card {
   margin: 0 0 20px 0;
+  cursor: pointer;
 
   mat-card-title {
     position: relative;
+    color: green;
 
     code {
       position: absolute;
@@ -45,5 +47,10 @@ mat-card {
   a[mat-icon-button] {
     position: relative;
     left: 5px;
+  }
+
+  img {
+    width: 100%;
+    height: auto;
   }
 }

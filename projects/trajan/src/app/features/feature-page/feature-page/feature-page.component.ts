@@ -11,7 +11,6 @@ import { ContentDataService } from '../../../shared/providers/content-data/conte
 @Component({
   selector: 'anms-feature-page',
   templateUrl: './feature-page.component.html',
-  styleUrls: ['./feature-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FeaturePageComponent implements OnInit {

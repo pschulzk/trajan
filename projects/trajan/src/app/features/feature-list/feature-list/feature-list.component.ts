@@ -20,7 +20,6 @@ import { ContentDataService } from '../../../shared/providers/content-data/conte
 @Component({
   selector: 'anms-feature-list',
   templateUrl: './feature-list.component.html',
-  styleUrls: ['./feature-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FeatureListComponent implements OnInit {
@@ -28,28 +27,14 @@ export class FeatureListComponent implements OnInit {
 
   receiptCategories$: Observable<TagResponse[]>;
   receiptCategories: TagResponse[];
-
   receipts$: Observable<NodeResponse<Receipt>[]>;
 
-  // destroyed$ = new Subject<void>();
-
-  constructor(
-    private router: Router,
-    // private changeDetectorRef: ChangeDetectorRef,
-    private content: ContentDataService
-  ) {}
+  constructor(private router: Router, private content: ContentDataService) {}
 
   ngOnInit() {
-    // this.settings$ = this.store.pipe(select(selectSettings));
-
     this.receiptCategories$ = this.content.getReceiptCategories();
     this.receipts$ = this.content.getReceiptsAll();
   }
-
-  // ngOnDestroy(): void {
-  //   this.destroyed$.next();
-  //   this.destroyed$.complete();
-  // }
 
   getNodeFieldBinary(nodeUuid: string, thumbnail: string): string {
     return this.content.getNodeFieldBinaryUrl(nodeUuid, thumbnail);
@@ -69,13 +54,7 @@ export class FeatureListComponent implements OnInit {
             ? true
             : false
         );
-      }),
-      // publishReplay(1),
-      // shareReplay(1),
-      // refCount(),
-      // take(1),
-      first()
+      })
     );
-    // .toPromise();
   }
 }

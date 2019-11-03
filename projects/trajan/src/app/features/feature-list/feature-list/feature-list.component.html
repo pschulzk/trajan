@@ -9,16 +9,17 @@
       *ngFor="let receiptCategory of receiptCategories; let i = index"
       class="col-md-12"
       [ngClass]="routeAnimationsElements"
-    >
-      <mat-accordion>
-        <mat-expansion-panel>
+  >
+      <mat-accordion [multi]="false">
+        <mat-expansion-panel [expanded]="i === 0">
           <mat-expansion-panel-header>
             <mat-panel-title>
               {{ receiptCategory.name }}
             </mat-panel-title>
           </mat-expansion-panel-header>
-      
-          <mat-card
+
+          <swiper>
+            <mat-card
             *ngFor="let receipt of (getReceiptsOfReceiptCategory(receiptCategory.name) | async)"
             (click)="onContentItemClick(receipt.uuid)"
           >
@@ -30,6 +31,8 @@
             </mat-card-subtitle>
             <img mat-card-image [src]="getNodeFieldBinary( receipt.uuid, 'thumbnail' )">
           </mat-card>
+          </swiper>
+
         </mat-expansion-panel>
       </mat-accordion>
     </div>
