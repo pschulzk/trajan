@@ -40,22 +40,28 @@ export class ContentDataService {
     this.tags$ = this.store
       .pipe(select(selectEntitiesTags))
       .pipe(
-        map(itemsIndexed =>
-          Object.keys(itemsIndexed).map(key => itemsIndexed[key])
+        map(
+          itemsIndexed =>
+            itemsIndexed &&
+            Object.keys(itemsIndexed).map(key => itemsIndexed[key])
         )
       );
     this.tagFamilies$ = this.store
       .pipe(select(selectEntitiesTagFamilies))
       .pipe(
-        map(itemsIndexed =>
-          Object.keys(itemsIndexed).map(key => itemsIndexed[key])
+        map(
+          itemsIndexed =>
+            itemsIndexed &&
+            Object.keys(itemsIndexed).map(key => itemsIndexed[key])
         )
       );
     this.receipts$ = this.store
       .pipe(select(selectEntitiesReceipts))
       .pipe(
-        map(itemsIndexed =>
-          Object.keys(itemsIndexed).map(key => itemsIndexed[key])
+        map(
+          itemsIndexed =>
+            itemsIndexed &&
+            Object.keys(itemsIndexed).map(key => itemsIndexed[key])
         )
       );
   }
