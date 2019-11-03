@@ -29,6 +29,16 @@ export class FeatureListComponent implements OnInit {
   receiptCategories: TagResponse[];
   receipts$: Observable<NodeResponse<Receipt>[]>;
 
+  receiptCategoryColors = [
+    '#ac8391',
+    '#3ca8bb',
+    '#7ba09b',
+    '#5254b3',
+    '#147d77',
+    '#f554b1',
+    '#32acd9'
+  ];
+
   constructor(private router: Router, private content: ContentDataService) {}
 
   ngOnInit() {

@@ -15,6 +15,7 @@ mat-card {
 
   mat-card-title {
     position: relative;
+    line-height: 2rem;
     color: green;
 
     code {
@@ -53,4 +54,15 @@ mat-card {
     width: 100%;
     height: auto;
   }
+}
+
+mat-expansion-panel-header {
+  font-size: 1.2rem;
+}
+
+.mat-expansion-panel,
+.mat-expansion-panel-header-title,
+.mat-drawer-container,
+.mat-expansion-indicator:after {
+  color: white !important;
 }

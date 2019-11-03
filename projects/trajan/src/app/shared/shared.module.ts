@@ -95,8 +95,6 @@ library.add(
   faBook
 );
 
-import { BigInputComponent } from './big-input/big-input/big-input.component';
-import { BigInputActionComponent } from './big-input/big-input-action/big-input-action.component';
 import { RtlSupportDirective } from './rtl-support/rtl-support.directive';
 import { ContentApiService } from './providers/content-api/content-api.service';
 import { ContentDataService } from './providers/content-data/content-data.service';
@@ -138,11 +136,7 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
 
     FontAwesomeModule
   ],
-  declarations: [
-    BigInputComponent,
-    BigInputActionComponent,
-    RtlSupportDirective
-  ],
+  declarations: [RtlSupportDirective],
   providers: [
     ContentApiService,
     ContentDataService,
@@ -182,9 +176,6 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
     SwiperModule,
 
     FontAwesomeModule,
-
-    BigInputComponent,
-    BigInputActionComponent,
     RtlSupportDirective
   ]
 })

@@ -11,7 +11,10 @@
       [ngClass]="routeAnimationsElements"
   >
       <mat-accordion [multi]="false">
-        <mat-expansion-panel [expanded]="i === 0">
+        <mat-expansion-panel
+          [expanded]="i === 0"
+          [style.background-color]="receiptCategoryColors[i]"
+        >
           <mat-expansion-panel-header>
             <mat-panel-title>
               {{ receiptCategory.name }}
@@ -35,6 +38,8 @@
 
         </mat-expansion-panel>
       </mat-accordion>
+
+      <br>
     </div>
   </div>
   <ng-template #loading>
