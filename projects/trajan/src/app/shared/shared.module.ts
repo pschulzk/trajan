@@ -104,7 +104,8 @@ import { HttpClientModule } from '@angular/common/http';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
-  slidesPerView: 'auto'
+  slidesPerView: 'auto',
+  navigation: true
 };
 
 @NgModule({
