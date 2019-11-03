@@ -2,21 +2,12 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   NodeResponse,
-  NodeListResponse,
-  TagFamilyListResponse,
-  TagListResponse,
   TagFamilyResponse,
   TagResponse
 } from '../../models/server-models';
 import { Receipt } from '../../models/receipt.model';
-import { HttpClient } from '@angular/common/http';
 import { map, tap, filter } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
-import {
-  actionEntitiesReceiptAdd,
-  actionEntitiesTagFamilyAdd,
-  actionEntitiesTagAdd
-} from '../../../core/entities/entities.actions';
 import { AppState } from '../../../core/core.state';
 import { ContentApiService } from '../content-api/content-api.service';
 import {
@@ -33,8 +24,8 @@ export class ContentDataService {
   tagFamilies$: Observable<TagFamilyResponse[]>;
   receipts$: Observable<NodeResponse<Receipt>[]>;
 
-  tagFamilyReceiptsUuid = '179100da2deb4d0a9100da2debcd0af5';
-  tagFamilyIngedrientsUuid = 'ec95a3920a4c42cb95a3920a4c32cba6';
+  tagFamilyReceiptsUuid = '91d53bab0f954a76953bab0f955a7655';
+  tagFamilyIngedrientsUuid = 'b9fe4f8fba1f48e4be4f8fba1f78e471';
 
   constructor(
     private contentApi: ContentApiService,

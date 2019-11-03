@@ -1,8 +1,8 @@
 {
-    "/api": {
-        "target": "http://khaleesi.app:8080",
-        "secure": false,
-        "logLevel": "debug",
-        "changeOrigin": true
-    }
+  "/api": {
+    "target": "http://khaleesi.at:8080",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  }
 }

@@ -14,17 +14,7 @@ import {
 import { Receipt } from '../../../shared/models/receipt.model';
 import { Observable, Subject } from 'rxjs';
 import { Router } from '@angular/router';
-import {
-  map,
-  takeUntil,
-  share,
-  shareReplay,
-  refCount,
-  take,
-  publishReplay,
-  first
-} from 'rxjs/operators';
-import { Store, select } from '@ngrx/store';
+import { map, shareReplay, take, first } from 'rxjs/operators';
 import { ContentDataService } from '../../../shared/providers/content-data/content-data.service';
 
 @Component({
@@ -71,23 +61,21 @@ export class FeatureListComponent implements OnInit {
 
   getReceiptsOfReceiptCategory(
     receiptCategoryName: string
-  ): Promise<NodeResponse<Receipt>[]> {
-    return this.receipts$
-      .pipe(
-        map((receipts: NodeResponse<Receipt>[]) => {
-          return receipts.filter(receipt =>
-            receipt &&
-            receipt.tags.find(tag => tag.name === receiptCategoryName)
-              ? true
-              : false
-          );
-        }),
-        // publishReplay(1),
-        shareReplay(1),
-        // refCount(),
-        take(1),
-        first()
-      )
-      .toPromise();
+  ): Observable<NodeResponse<Receipt>[]> {
+    return this.receipts$.pipe(
+      map((receipts: NodeResponse<Receipt>[]) => {
+        return receipts.filter(receipt =>
+          receipt && receipt.tags.find(tag => tag.name === receiptCategoryName)
+            ? true
+            : false
+        );
+      }),
+      // publishReplay(1),
+      // shareReplay(1),
+      // refCount(),
+      // take(1),
+      first()
+    );
+    // .toPromise();
   }
 }
