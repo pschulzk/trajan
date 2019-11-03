@@ -56,6 +56,13 @@ mat-card {
   }
 }
 
+@media (hover: none) {
+  .mat-expansion-panel:not(.mat-expanded):not([aria-disabled='true'])
+    .mat-expansion-panel-header:hover {
+    background-color: inherit !important;
+  }
+}
+
 mat-expansion-panel-header {
   font-size: 1.2rem;
 }
