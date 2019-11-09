@@ -29,6 +29,7 @@
               "projects/trajan/src/assets"
             ],
             "styles": [
+              "node_modules/material-design-icons-iconfont/dist/material-design-icons.css",
               "projects/trajan/src/styles-app-loading.scss",
               "projects/trajan/src/styles.scss"
             ],

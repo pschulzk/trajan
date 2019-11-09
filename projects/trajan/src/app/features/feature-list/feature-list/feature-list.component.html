@@ -10,11 +10,33 @@
       <mat-form-field>
         <input formControlName="searchTerm" matInput placeholder="Suchbegriff">
       </mat-form-field>
-    
-      <!-- <mat-form-field>
-        <textarea matInput placeholder="Leave a comment"></textarea>
-      </mat-form-field> -->
-      <pre>searchTerm: {{ formGroupValues$ | async | json }}</pre>
+
+      <mat-form-field class="example-chip-list">
+        <mat-chip-list #chipList aria-label="Fruit selection">
+          <mat-chip
+            *ngFor="let fruit of fruits"
+            [selectable]="selectable"
+            [removable]="true"
+            (removed)="remove(fruit)">
+            {{fruit}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+          <input
+            placeholder="New fruit..."
+            #fruitInput
+            [formControl]="fruitCtrl"
+            [matAutocomplete]="auto"
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            [matChipInputAddOnBlur]="addOnBlur"
+            (matChipInputTokenEnd)="add($event)">
+        </mat-chip-list>
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+          <mat-option *ngFor="let fruit of filteredFruits | async" [value]="fruit">
+            {{fruit}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
     </form>    
   </div>
 

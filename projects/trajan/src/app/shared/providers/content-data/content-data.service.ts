@@ -83,9 +83,6 @@ export class ContentDataService {
 
   getReceipt(nodeUuid: string): Observable<NodeResponse<Receipt>> {
     return this.store.select(state => state.entities.receipt[nodeUuid]);
-    // return this.receipts$.pipe(
-    //   map(items => items.find(item => item.uuid === nodeUuid)),
-    // );
   }
 
   getReceiptsAll(): Observable<NodeResponse<Receipt>[]> {
