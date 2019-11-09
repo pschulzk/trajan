@@ -72,6 +72,7 @@ export class ContentDataService {
 
   getTagsOfTagFamily(tagFamilyUuid: string): Observable<TagResponse[]> {
     return this.tags$.pipe(
+      filter(items => Array.isArray(items)),
       map(items => items.filter(item => item.tagFamily.uuid === tagFamilyUuid))
     );
   }

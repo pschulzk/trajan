@@ -14,8 +14,21 @@ import {
 import { Receipt } from '../../../shared/models/receipt.model';
 import { Observable, Subject } from 'rxjs';
 import { Router } from '@angular/router';
-import { map, shareReplay, take, first } from 'rxjs/operators';
+import {
+  map,
+  shareReplay,
+  take,
+  first,
+  tap,
+  startWith,
+  filter
+} from 'rxjs/operators';
 import { ContentDataService } from '../../../shared/providers/content-data/content-data.service';
+import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
+
+interface FeatureListFormGroup {
+  searchTerm: FormControl | string;
+}
 
 @Component({
   selector: 'anms-feature-list',
@@ -29,6 +42,16 @@ export class FeatureListComponent implements OnInit {
   receiptCategories: TagResponse[];
   receipts$: Observable<NodeResponse<Receipt>[]>;
 
+  formGroup: FormGroup;
+
+  formGroupInitControl: FeatureListFormGroup = {
+    searchTerm: new FormControl('')
+  };
+
+  get formGroupValues$(): Observable<FeatureListFormGroup> {
+    return this.formGroup.valueChanges;
+  }
+
   receiptCategoryColors = [
     '#ac8391',
     '#3ca8bb',
@@ -39,11 +62,17 @@ export class FeatureListComponent implements OnInit {
     '#32acd9'
   ];
 
-  constructor(private router: Router, private content: ContentDataService) {}
+  constructor(
+    private router: Router,
+    private content: ContentDataService,
+    private formBuilder: FormBuilder
+  ) {}
 
   ngOnInit() {
     this.receiptCategories$ = this.content.getReceiptCategories();
     this.receipts$ = this.content.getReceiptsAll();
+
+    this.formGroup = this.formBuilder.group(this.formGroupInitControl);
   }
 
   getNodeFieldBinary(nodeUuid: string, thumbnail: string): string {
