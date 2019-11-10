@@ -74,6 +74,12 @@ mat-expansion-panel-header {
   color: white !important;
 }
 
+.panel-title {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
 mat-form-field {
   width: 100%;
 }

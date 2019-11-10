@@ -6,25 +6,30 @@
   </div> -->
 
   <div class="row">
-    <form [formGroup]="formGroup" class="col-md-12">
+    <div class="col-md-12">
       <mat-form-field>
-        <input formControlName="searchTerm" matInput placeholder="Suchbegriff">
+        <input
+          #inputSearchTerm
+          (input)="searchTerm = $event.target.value"
+          matInput
+          placeholder="Suchbegriff"
+        >
       </mat-form-field>
 
       <mat-form-field class="example-chip-list">
         <mat-chip-list #chipList aria-label="Fruit selection">
           <mat-chip
-            *ngFor="let fruit of fruits"
+            *ngFor="let tagSelected of tagsSelected"
             [selectable]="selectable"
             [removable]="true"
-            (removed)="remove(fruit)">
-            {{fruit}}
+            (removed)="remove(tagSelected)">
+            {{tagSelected}}
             <mat-icon matChipRemove>cancel</mat-icon>
           </mat-chip>
           <input
-            placeholder="New fruit..."
-            #fruitInput
-            [formControl]="fruitCtrl"
+            #inputTagsInclude
+            placeholder="Enthält Zutaten..."
+            [formControl]="inputTagIncludeControl"
             [matAutocomplete]="auto"
             [matChipInputFor]="chipList"
             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
@@ -32,12 +37,12 @@
             (matChipInputTokenEnd)="add($event)">
         </mat-chip-list>
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-          <mat-option *ngFor="let fruit of filteredFruits | async" [value]="fruit">
-            {{fruit}}
+          <mat-option *ngFor="let tag of filteredTags$ | async" [value]="tag">
+            {{tag}}
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
-    </form>    
+    </div>    
   </div>
 
   <div *ngIf="receiptCategories$ | async as receiptCategories; else loading" class="row">
@@ -53,7 +58,10 @@
         >
           <mat-expansion-panel-header>
             <mat-panel-title>
-              {{ receiptCategory.name }}
+              <div class="panel-title">
+                <div>{{ receiptCategory.name }}</div>
+                <div>{{ (getReceiptsOfReceiptCategory(receiptCategory.name) | async).length + ' Rezepte' }}</div>
+              </div>
             </mat-panel-title>
           </mat-expansion-panel-header>
 
