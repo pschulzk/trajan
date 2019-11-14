@@ -99,10 +99,11 @@ library.add(
   faBook
 );
 
-import { RtlSupportDirective } from './rtl-support/rtl-support.directive';
+import { ConnectionStateService } from './providers/connection-state/connection-state.service';
 import { ContentApiService } from './providers/content-api/content-api.service';
 import { ContentDataService } from './providers/content-data/content-data.service';
 import { HttpClientModule } from '@angular/common/http';
+import { RtlSupportDirective } from './rtl-support/rtl-support.directive';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
@@ -144,6 +145,7 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   ],
   declarations: [RtlSupportDirective],
   providers: [
+    ConnectionStateService,
     ContentApiService,
     ContentDataService,
     {

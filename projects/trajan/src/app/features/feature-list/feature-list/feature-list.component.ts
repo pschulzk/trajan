@@ -81,6 +81,8 @@ export class FeatureListComponent implements OnDestroy, OnInit {
     '#32acd9'
   ];
 
+  panelIndexCurrent$: Observable<number>;
+
   private destroyed = new Subject<void>();
 
   constructor(private router: Router, private content: ContentDataService) {}
@@ -119,7 +121,7 @@ export class FeatureListComponent implements OnDestroy, OnInit {
     this.receipts$ = this.content.getReceiptsAll();
 
     this.filteredTags$ = this.inputTagIncludeControl.valueChanges.pipe(
-      startWith(null),
+      //   startWith(null),
       map((tag: string | null) =>
         tag ? this._filter(tag) : this.allTags.slice()
       )

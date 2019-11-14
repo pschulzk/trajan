@@ -7,6 +7,7 @@ import {
   actionSettingsChangeAutoNightMode,
   actionSettingsChangeHour,
   actionSettingsChangeLanguage,
+  actionSettingsChangeOnlineState,
   actionSettingsChangeStickyHeader,
   actionSettingsChangeTheme
 } from './settings.actions';
@@ -77,5 +78,13 @@ describe('SettingsReducer', () => {
     });
     const state = settingsReducer(undefined, action);
     expect(state.hour).toEqual(7);
+  });
+
+  it('should update online state', () => {
+    const action = actionSettingsChangeOnlineState({
+      online: true
+    });
+    const state = settingsReducer(undefined, action);
+    expect(state.online).toEqual(true);
   });
 });

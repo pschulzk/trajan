@@ -35,7 +35,13 @@ export const actionSettingsChangeAnimationsElements = createAction(
   '[Settings] Change Animations Elements',
   props<{ elementsAnimations: boolean }>()
 );
+
 export const actionSettingsChangeHour = createAction(
   '[Settings] Change Hours',
   props<{ hour: number }>()
+);
+
+export const actionSettingsChangeOnlineState = createAction(
+  '[Settings] Change Online State',
+  props<{ online: boolean }>()
 );

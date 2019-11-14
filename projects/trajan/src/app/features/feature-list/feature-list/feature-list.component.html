@@ -51,9 +51,10 @@
       class="col-md-12"
       [ngClass]="routeAnimationsElements"
   >
+    <!-- [expanded]="i === panelIndexCurrent$ | async" -->
       <mat-accordion [multi]="false">
         <mat-expansion-panel
-          [expanded]="i === 0"
+          [attr.data-index]="i"
           [style.background-color]="receiptCategoryColors[i]"
         >
           <mat-expansion-panel-header>

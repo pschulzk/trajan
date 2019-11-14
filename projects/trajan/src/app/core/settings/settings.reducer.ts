@@ -7,32 +7,35 @@ import {
   actionSettingsChangeHour,
   actionSettingsChangeLanguage,
   actionSettingsChangeStickyHeader,
-  actionSettingsChangeTheme
+  actionSettingsChangeTheme,
+  actionSettingsChangeOnlineState
 } from './settings.actions';
 import { Action, createReducer, on } from '@ngrx/store';
 
 export const initialState: SettingsState = {
-  language: 'de',
-  theme: 'NATURE-THEME',
   autoNightMode: false,
+  elementsAnimations: true,
+  hour: 0,
+  language: 'de',
   nightTheme: NIGHT_MODE_THEME,
-  stickyHeader: true,
+  online: false,
   pageAnimations: true,
   pageAnimationsDisabled: false,
-  elementsAnimations: true,
-  hour: 0
+  stickyHeader: true,
+  theme: 'NATURE-THEME'
 };
 
 const reducer = createReducer(
   initialState,
   on(
-    actionSettingsChangeLanguage,
-    actionSettingsChangeTheme,
-    actionSettingsChangeAutoNightMode,
-    actionSettingsChangeStickyHeader,
-    actionSettingsChangeAnimationsPage,
     actionSettingsChangeAnimationsElements,
+    actionSettingsChangeAnimationsPage,
+    actionSettingsChangeAutoNightMode,
     actionSettingsChangeHour,
+    actionSettingsChangeLanguage,
+    actionSettingsChangeOnlineState,
+    actionSettingsChangeStickyHeader,
+    actionSettingsChangeTheme,
     (state, action) => ({ ...state, ...action })
   ),
   on(
