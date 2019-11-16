@@ -37,33 +37,23 @@ export class ContentDataService {
     this.contentApi.getReceiptsOfProject().toPromise();
 
     // get existing entities from state
-    this.tags$ = this.store
-      .pipe(select(selectEntitiesTags))
-      .pipe(
-        map(
-          itemsIndexed =>
-            itemsIndexed &&
-            Object.keys(itemsIndexed).map(key => itemsIndexed[key])
-        )
-      );
-    this.tagFamilies$ = this.store
-      .pipe(select(selectEntitiesTagFamilies))
-      .pipe(
-        map(
-          itemsIndexed =>
-            itemsIndexed &&
-            Object.keys(itemsIndexed).map(key => itemsIndexed[key])
-        )
-      );
-    this.receipts$ = this.store
-      .pipe(select(selectEntitiesReceipts))
-      .pipe(
-        map(
-          itemsIndexed =>
-            itemsIndexed &&
-            Object.keys(itemsIndexed).map(key => itemsIndexed[key])
-        )
-      );
+    this.tags$ = this.store.pipe(select(selectEntitiesTags)).pipe(
+      filter((itemsIndexed: { [uuid: string]: TagResponse }) => !!itemsIndexed),
+      map(itemsIndexed => Object.values(itemsIndexed))
+    );
+    this.tagFamilies$ = this.store.pipe(select(selectEntitiesTagFamilies)).pipe(
+      filter(
+        (itemsIndexed: { [uuid: string]: TagFamilyResponse }) => !!itemsIndexed
+      ),
+      map(itemsIndexed => Object.values(itemsIndexed))
+    );
+    this.receipts$ = this.store.pipe(select(selectEntitiesReceipts)).pipe(
+      filter(
+        (itemsIndexed: { [uuid: string]: NodeResponse<Receipt> }) =>
+          !!itemsIndexed
+      ),
+      map(itemsIndexed => Object.values(itemsIndexed))
+    );
   }
 
   getTagFamilies(): Observable<TagFamilyResponse[]> {

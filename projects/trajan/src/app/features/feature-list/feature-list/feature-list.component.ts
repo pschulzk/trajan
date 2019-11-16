@@ -121,7 +121,6 @@ export class FeatureListComponent implements OnDestroy, OnInit {
     this.receipts$ = this.content.getReceiptsAll();
 
     this.filteredTags$ = this.inputTagIncludeControl.valueChanges.pipe(
-      //   startWith(null),
       map((tag: string | null) =>
         tag ? this._filter(tag) : this.allTags.slice()
       )

@@ -22,9 +22,10 @@
             *ngFor="let tagSelected of tagsSelected"
             [selectable]="selectable"
             [removable]="true"
-            (removed)="remove(tagSelected)">
-            {{tagSelected}}
-            <mat-icon matChipRemove>cancel</mat-icon>
+            (removed)="remove(tagSelected)"
+          >
+            {{ tagSelected }}
+          <mat-icon matChipRemove>cancel</mat-icon>
           </mat-chip>
           <input
             #inputTagsInclude
@@ -38,7 +39,7 @@
         </mat-chip-list>
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
           <mat-option *ngFor="let tag of filteredTags$ | async" [value]="tag">
-            {{tag}}
+            {{ tag }}
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
@@ -68,17 +69,17 @@
 
           <swiper>
             <mat-card
-            *ngFor="let receipt of getReceiptsOfReceiptCategory(receiptCategory.name) | async"
-            (click)="onContentItemClick(receipt.uuid)"
-          >
-            <mat-card-title rtl>
+              *ngFor="let receipt of getReceiptsOfReceiptCategory(receiptCategory.name) | async"
+              (click)="onContentItemClick(receipt.uuid)"
+            >
+              <mat-card-title rtl>
                 {{ receipt.fields.name }}
               </mat-card-title>
-            <mat-card-subtitle rtl>
-              {{ receipt.fields.text_teaser }}
-            </mat-card-subtitle>
-            <img mat-card-image [src]="getNodeFieldBinary( receipt.uuid, 'thumbnail' )">
-          </mat-card>
+              <mat-card-subtitle rtl>
+                {{ receipt.fields.text_teaser }}
+              </mat-card-subtitle>
+              <img mat-card-image [src]="getNodeFieldBinary( receipt.uuid, 'thumbnail' )">
+            </mat-card>
           </swiper>
 
         </mat-expansion-panel>
@@ -87,6 +88,7 @@
       <br>
     </div>
   </div>
+
   <ng-template #loading>
     Loading...
   </ng-template>
