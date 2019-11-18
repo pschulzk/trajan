@@ -1,12 +1,20 @@
 @import './styles-variables';
+@import url('https://fonts.googleapis.com/css?family=Kaushan+Script&display=swap');
+$font-kaushan: 'Kaushan Script', cursive;
 
-.container {
-  margin-top: 20px;
+html,
+body {
+  overflow: hidden;
+  height: 100%;
 }
 
 .main-heading {
   text-transform: uppercase;
   margin: 0 0 20px 0;
+}
+
+.brand-title {
+  font-family: $font-kaushan;
 }
 
 mat-card {
@@ -86,4 +94,32 @@ mat-form-field {
 
 .example-chip-list {
   width: 100%;
+}
+
+mat-sidenav-container .toolbar .branding.center {
+  margin-left: -20px;
+}
+
+.nature-theme .mat-toolbar.mat-primary {
+  $color: #43a047ed;
+
+  // color: $color;
+  background: transparent !important;
+  transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
+
+  span,
+  fa-icon {
+    color: $color;
+    transition: color 0.2s ease-in-out;
+  }
+
+  &.user-has-scrolled {
+    background: $color !important;
+    // color: inherit;
+
+    span,
+    fa-icon {
+      color: white;
+    }
+  }
 }

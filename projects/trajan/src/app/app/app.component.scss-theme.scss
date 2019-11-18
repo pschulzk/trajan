@@ -6,6 +6,9 @@
   $warn: map-get($theme, warn);
 
   mat-sidenav-container {
+    .mat-elevation-z4 {
+      box-shadow: none;
+    }
     mat-toolbar {
       button {
         &.active {

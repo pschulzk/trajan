@@ -16,12 +16,15 @@ import { settingsReducer } from './settings/settings.reducer';
 import { SettingsState } from './settings/settings.model';
 import { entitiesReducer } from './entities/entities.reducer';
 import { EntitiesState } from './entities/entities.model';
+import { UiMemoryState } from './ui-memory/ui-memory.model';
+import { UiMemoryReducer } from './ui-memory/ui-memory.reducer';
 
 export const reducers: ActionReducerMap<AppState> = {
   auth: authReducer,
   settings: settingsReducer,
   router: routerReducer,
   entities: entitiesReducer,
+  uiMemory: UiMemoryReducer
 };
 
 export const metaReducers: MetaReducer<AppState>[] = [
@@ -53,9 +56,15 @@ export const selectEntitiesState = createFeatureSelector<
   EntitiesState
 >('entities');
 
+export const selectUiMemoryState = createFeatureSelector<
+  AppState,
+  UiMemoryState
+>('uiMemory');
+
 export interface AppState {
   auth: AuthState;
   settings: SettingsState;
   router: RouterReducerState<RouterStateUrl>;
   entities: EntitiesState;
+  uiMemory: UiMemoryState;
 }

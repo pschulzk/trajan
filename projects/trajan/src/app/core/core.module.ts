@@ -46,6 +46,7 @@ import {
   selectSettingsStickyHeader
 } from './settings/settings.selectors';
 import { EntitiesEffects } from './entities/entities.effects';
+import { UiMemoryEffects } from './ui-memory/ui-memory.effects';
 
 export {
   TitleService,
@@ -88,6 +89,7 @@ export function HttpLoaderFactory(http: HttpClient) {
       SettingsEffects,
       GoogleAnalyticsEffects,
       EntitiesEffects,
+      UiMemoryEffects
     ]),
     environment.production
       ? []

@@ -3,12 +3,14 @@ import {
   OnInit,
   ChangeDetectionStrategy,
   OnDestroy,
-  ChangeDetectorRef,
   ElementRef,
-  ViewChild
+  ViewChild,
+  AfterViewInit,
+  ViewChildren,
+  QueryList
 } from '@angular/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { ROUTE_ANIMATIONS_ELEMENTS } from '../../../core/core.module';
+import { ROUTE_ANIMATIONS_ELEMENTS, AppState } from '../../../core/core.module';
 import {
   NodeResponse,
   TagResponse
@@ -20,24 +22,33 @@ import {
   filter,
   map,
   tap,
-  startWith,
   takeUntil,
-  debounceTime
+  debounceTime,
+  first,
+  publishReplay,
+  refCount,
+  withLatestFrom,
+  delay
 } from 'rxjs/operators';
 import { ContentDataService } from '../../../shared/providers/content-data/content-data.service';
 import { FormGroup, FormControl } from '@angular/forms';
 import {
   MatAutocomplete,
   MatAutocompleteSelectedEvent,
-  MatChipInputEvent
+  MatChipInputEvent,
+  MatAccordion,
+  MatExpansionPanel
 } from '@angular/material';
+import { UiMemoryState } from '../../../core/ui-memory/ui-memory.model';
+import { Store } from '@ngrx/store';
+import { actionUiMemoryFeatureListTabOpenIndexSet } from '../../../core/ui-memory/ui-memory.actions';
 
 @Component({
   selector: 'anms-feature-list',
   templateUrl: './feature-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FeatureListComponent implements OnDestroy, OnInit {
+export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
   routeAnimationsElements = ROUTE_ANIMATIONS_ELEMENTS;
 
   receiptIngredientTags$: Observable<TagResponse[]>;
@@ -63,6 +74,10 @@ export class FeatureListComponent implements OnDestroy, OnInit {
   inputTagsInclude: ElementRef<HTMLInputElement>;
   @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete;
 
+  @ViewChildren(MatExpansionPanel) accordionFeatureList: QueryList<
+    MatExpansionPanel
+  >;
+
   set searchTerm(v: string) {
     this._searchTerm$.next(v);
   }
@@ -85,7 +100,11 @@ export class FeatureListComponent implements OnDestroy, OnInit {
 
   private destroyed = new Subject<void>();
 
-  constructor(private router: Router, private content: ContentDataService) {}
+  constructor(
+    private router: Router,
+    private content: ContentDataService,
+    private store: Store<AppState>
+  ) {}
 
   ngOnInit() {
     this.receiptIngredientTags$ = this.content.getTagsOfTagFamily(
@@ -103,20 +122,6 @@ export class FeatureListComponent implements OnDestroy, OnInit {
       )
       .subscribe(tags => (this.allTags = tags));
 
-    // this.receiptIngredientTagsFiltered$ = combineLatest([
-    //   this.receiptIngredientTags$,
-    //   this.searchTerm$,
-    // ]).pipe(
-    //   map(([tags, searchTerm]) =>
-    //     tags.filter(tag => {
-    //       return new RegExp(
-    //         `(${searchTerm})`,
-    //         'gi'
-    //       ).test(tag.name);
-    //     })
-    //   )
-    // );
-
     this.receiptCategories$ = this.content.getReceiptCategories();
     this.receipts$ = this.content.getReceiptsAll();
 
@@ -125,6 +130,14 @@ export class FeatureListComponent implements OnDestroy, OnInit {
         tag ? this._filter(tag) : this.allTags.slice()
       )
     );
+
+    this.panelIndexCurrent$ = this.store
+      .select(state => state.uiMemory.featureListTabOpenIndex)
+      .pipe(filter((index: number | undefined) => Number.isInteger(index)));
+  }
+
+  ngAfterViewInit(): void {
+    // this._featureListTabOpenIndexSet();
   }
 
   ngOnDestroy(): void {
@@ -200,6 +213,14 @@ export class FeatureListComponent implements OnDestroy, OnInit {
     this.tagsSelected.push(event.option.viewValue);
     this.inputTagsInclude.nativeElement.value = '';
     this.inputTagIncludeControl.setValue(null);
+  }
+
+  accordionAfterExpand(index: number): void {
+    this.store.dispatch(
+      actionUiMemoryFeatureListTabOpenIndexSet({
+        featureListTabOpenIndex: index
+      })
+    );
   }
 
   private _filter(value: string): string[] {

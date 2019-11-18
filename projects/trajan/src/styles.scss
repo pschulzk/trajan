@@ -41,4 +41,13 @@
 .nature-theme {
   @include angular-material-theme($anms-nature-theme);
   @include custom-components-theme($anms-nature-theme);
+
+  .mat-drawer-container {
+    background-color: #f3f3f3; // mat-color($primary);
+    width: 100%;
+    height: 100%;
+    background-image: url(./assets/tree-bare.svg);
+    background-size: cover;
+    background-position: 0 15px;
+  }
 }

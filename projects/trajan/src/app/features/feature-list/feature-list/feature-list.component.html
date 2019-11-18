@@ -1,12 +1,12 @@
 <div class="container">
   <!-- <div class="row">
-    <div class="col-md-12">
+    <div class="col-sm-12 col-md-10 col-lg-6">
       <h1 rtl class="main-heading">{{ 'anms.title.receipt' | translate }}</h1>
     </div>
   </div> -->
 
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-sm-12 col-md-10 col-lg-6 offset-sm-0 offset-md-1 offset-lg-3">
       <mat-form-field>
         <input
           #inputSearchTerm
@@ -43,20 +43,21 @@
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
-    </div>    
+    </div>
   </div>
 
-  <div *ngIf="receiptCategories$ | async as receiptCategories; else loading" class="row">
+  <div *ngIf="(receiptCategories$ | async) as receiptCategories; else loading" class="row">
     <div
       *ngFor="let receiptCategory of receiptCategories; let i = index"
-      class="col-md-12"
+      class="col-sm-12 col-md-10 col-lg-6 offset-sm-0 offset-md-1 offset-lg-3"
       [ngClass]="routeAnimationsElements"
   >
-    <!-- [expanded]="i === panelIndexCurrent$ | async" -->
       <mat-accordion [multi]="false">
         <mat-expansion-panel
           [attr.data-index]="i"
           [style.background-color]="receiptCategoryColors[i]"
+          [expanded]="i === (panelIndexCurrent$ | async)"
+          (afterExpand)="accordionAfterExpand(i)"
         >
           <mat-expansion-panel-header>
             <mat-panel-title>
@@ -67,20 +68,22 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
 
-          <swiper>
-            <mat-card
-              *ngFor="let receipt of getReceiptsOfReceiptCategory(receiptCategory.name) | async"
-              (click)="onContentItemClick(receipt.uuid)"
-            >
-              <mat-card-title rtl>
-                {{ receipt.fields.name }}
-              </mat-card-title>
-              <mat-card-subtitle rtl>
-                {{ receipt.fields.text_teaser }}
-              </mat-card-subtitle>
-              <img mat-card-image [src]="getNodeFieldBinary( receipt.uuid, 'thumbnail' )">
-            </mat-card>
-          </swiper>
+          <ng-template matExpansionPanelContent>
+            <swiper>
+              <mat-card
+                *ngFor="let receipt of getReceiptsOfReceiptCategory(receiptCategory.name) | async"
+                (click)="onContentItemClick(receipt.uuid)"
+              >
+                <mat-card-title rtl>
+                  {{ receipt.fields.name }}
+                </mat-card-title>
+                <mat-card-subtitle rtl>
+                  {{ receipt.fields.text_teaser }}
+                </mat-card-subtitle>
+                <img mat-card-image [src]="getNodeFieldBinary( receipt.uuid, 'thumbnail' )">
+              </mat-card>
+            </swiper>
+          </ng-template>
 
         </mat-expansion-panel>
       </mat-accordion>
@@ -90,6 +93,11 @@
   </div>
 
   <ng-template #loading>
-    Loading...
+    Lädt...
   </ng-template>
+
+  <br>
+  <br>
+  <br>
+  <br>
 </div>

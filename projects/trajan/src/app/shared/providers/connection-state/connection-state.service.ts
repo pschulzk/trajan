@@ -14,8 +14,6 @@ export class ConnectionStateService {
   constructor(private store: Store<SettingsState>) {
     window.addEventListener('online', () => this.updateOnlineStatus());
     window.addEventListener('offline', () => this.updateOnlineStatus());
-
-    console.log(`!!! ${this.constructor.name}.isOnline:`, this.isOnline);
   }
 
   private updateOnlineStatus() {

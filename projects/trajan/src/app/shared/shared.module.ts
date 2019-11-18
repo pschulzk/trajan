@@ -104,6 +104,7 @@ import { ContentApiService } from './providers/content-api/content-api.service';
 import { ContentDataService } from './providers/content-data/content-data.service';
 import { HttpClientModule } from '@angular/common/http';
 import { RtlSupportDirective } from './rtl-support/rtl-support.directive';
+import { WINDOW_PROVIDERS } from './providers/window/window.service';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
@@ -151,7 +152,8 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
     {
       provide: SWIPER_CONFIG,
       useValue: DEFAULT_SWIPER_CONFIG
-    }
+    },
+    WINDOW_PROVIDERS
   ],
   exports: [
     CommonModule,
