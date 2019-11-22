@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { normalize, schema } from 'normalizr';
+// import normalize from 'json-api-normalizer';
 import {
   NodeResponse,
   TagFamilyResponse,
@@ -15,17 +17,62 @@ import {
   selectEntitiesTagFamilies,
   selectEntitiesReceipts
 } from '../../../core/entities/entities.selectors';
+import { ContentIndexedDbService } from '../content-indexeddb/content-indexeddb.service';
+import {
+  meshSchema,
+  meshMicroschema,
+  meshNodeFieldMicronode,
+  projectReference,
+  meshNodeReference,
+  userNodeReference,
+  meshUser,
+  meshRole,
+  meshGroup,
+  meshTagFamily,
+  meshTag,
+  meshNodeChildren,
+  meshNode
+} from '../../schemas/mesh-schemas';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContentDataService {
   tags$: Observable<TagResponse[]>;
+  indexedDbServiceTags: ContentIndexedDbService;
+
   tagFamilies$: Observable<TagFamilyResponse[]>;
+  indexedDbServiceTagFamilies: ContentIndexedDbService;
+
   receipts$: Observable<NodeResponse<Receipt>[]>;
+  indexedDbServiceReceipts: ContentIndexedDbService;
 
   tagFamilyReceiptsUuid = '91d53bab0f954a76953bab0f955a7655';
   tagFamilyIngedrientsUuid = 'b9fe4f8fba1f48e4be4f8fba1f78e471';
+
+  // getSchemaObjectKeysFromJson(data: Object): any {
+  //   const objectKeys = [];
+  //   const parseObject = (obj: Object): void => {
+  //     Object.keys(obj).forEach((key: string) => {
+  //       const objCheck = obj[key];
+  //       if (objCheck instanceof Object) {
+  //         objectKeys.push(key);
+  //         if (Object.keys(objCheck).length > 0) {
+  //           parseObject(objCheck);
+  //         }
+  //       } else if (objCheck instanceof Array) {
+  //         objectKeys.push(key);
+  //         if (objCheck.length > 0) {
+  //           parseObject(objCheck[0]);
+  //         }
+  //       } else {
+  //         return;
+  //       }
+  //     });
+  //   }
+  //   parseObject(data);
+  //   return objectKeys;
+  // }
 
   constructor(
     private contentApi: ContentApiService,
@@ -34,7 +81,14 @@ export class ContentDataService {
     // load entities
     this.contentApi.getTagFamiliesOfProject().toPromise();
     this.contentApi.getTagsAll().toPromise();
-    this.contentApi.getReceiptsOfProject().toPromise();
+    this.contentApi
+      .getReceiptsOfProject()
+      .toPromise()
+      .then((receipts: NodeResponse<Receipt>[]) => {
+        console.log('!!! receipts:', receipts);
+        const normalizedData = normalize(receipts, [meshNode]);
+        console.log('!!! normalizedData:', normalizedData);
+      });
 
     // get existing entities from state
     this.tags$ = this.store.pipe(select(selectEntitiesTags)).pipe(
