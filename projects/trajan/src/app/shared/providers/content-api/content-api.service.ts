@@ -18,6 +18,7 @@ import {
   actionEntitiesTagAdd
 } from '../../../core/entities/entities.actions';
 import { AppState } from '../../../core/core.state';
+import { ContentDatabaseService } from '../content-database/content-database.service';
 
 @Injectable({
   providedIn: 'root'
@@ -35,7 +36,11 @@ export class ContentApiService {
   tagFamilyReceiptsUuid = '91d53bab0f954a76953bab0f955a7655';
   tagFamilyIngedrientsUuid = 'b9fe4f8fba1f48e4be4f8fba1f78e471';
 
-  constructor(private httpClient: HttpClient, private store: Store<AppState>) {
+  constructor(
+    private httpClient: HttpClient,
+    private contentDatabase: ContentDatabaseService
+  ) // private store: Store<AppState>,
+  {
     // assemble URIs
     this.apiUri = `/${this.apiPath}/${this.projectName}`;
     this.apiNodeUri = `/${this.apiPath}/${this.projectName}/nodes`;
@@ -49,10 +54,12 @@ export class ContentApiService {
       .get<TagFamilyListResponse>(`${this.apiTagfamilyUri}`)
       .pipe(
         map((items: TagFamilyListResponse) => items.data),
-        tap((items: TagFamilyResponse[]) =>
-          items.forEach(item =>
-            this.store.dispatch(actionEntitiesTagFamilyAdd({ tagFamily: item }))
-          )
+        tap(
+          (items: TagFamilyResponse[]) =>
+            this.contentDatabase.storeTagFamilies(items)
+          // items.forEach(item =>
+          //   this.store.dispatch(actionEntitiesTagFamilyAdd({ tagFamily: item }))
+          // )
         )
       );
   }
@@ -62,10 +69,11 @@ export class ContentApiService {
       .get<TagListResponse>(`${this.apiTagfamilyUri}/${tagFamilyUuid}/tags`)
       .pipe(
         map((item: TagListResponse) => item.data),
-        tap((items: TagResponse[]) =>
-          items.forEach(item =>
-            this.store.dispatch(actionEntitiesTagAdd({ tag: item }))
-          )
+        tap(
+          (items: TagResponse[]) => this.contentDatabase.storeTags(items)
+          // items.forEach(item =>
+          // this.store.dispatch(actionEntitiesTagAdd({ tag: item }))
+          // )
         )
       );
   }
@@ -85,10 +93,11 @@ export class ContentApiService {
 
   getReceiptCategories(): Observable<TagResponse[]> {
     return this.getTagsOfTagFamily(this.tagFamilyReceiptsUuid).pipe(
-      tap((items: TagResponse[]) =>
-        items.forEach(item =>
-          this.store.dispatch(actionEntitiesTagAdd({ tag: item }))
-        )
+      tap(
+        (items: TagResponse[]) => this.contentDatabase.storeTags(items)
+        // items.forEach(item =>
+        // this.store.dispatch(actionEntitiesTagAdd({ tag: item }))
+        // )
       )
     );
   }
@@ -97,8 +106,10 @@ export class ContentApiService {
     return this.httpClient
       .get<NodeResponse<Receipt>>(`${this.apiNodeUri}/${nodeUuid}`)
       .pipe(
-        tap((item: NodeResponse<Receipt>) =>
-          this.store.dispatch(actionEntitiesReceiptAdd({ receipt: item }))
+        tap(
+          (item: NodeResponse<Receipt>) =>
+            this.contentDatabase.storeNodes([item])
+          // this.store.dispatch(actionEntitiesReceiptAdd({ receipt: item }))
         )
       );
   }
@@ -112,10 +123,12 @@ export class ContentApiService {
             Receipt
           >[]
       ),
-      tap((items: NodeResponse<Receipt>[]) =>
-        items.forEach(item =>
-          this.store.dispatch(actionEntitiesReceiptAdd({ receipt: item }))
-        )
+      tap(
+        (items: NodeResponse<Receipt>[]) =>
+          this.contentDatabase.storeNodes(items)
+        // items.forEach(item =>
+        // this.store.dispatch(actionEntitiesReceiptAdd({ receipt: item }))
+        // )
       )
     );
   }
@@ -149,10 +162,12 @@ export class ContentApiService {
               Receipt
             >[]
         ),
-        tap((items: NodeResponse<Receipt>[]) =>
-          items.forEach(item =>
-            this.store.dispatch(actionEntitiesReceiptAdd({ receipt: item }))
-          )
+        tap(
+          (items: NodeResponse<Receipt>[]) =>
+            this.contentDatabase.storeNodes(items)
+          // items.forEach(item =>
+          //   this.store.dispatch(actionEntitiesReceiptAdd({ receipt: item }))
+          // )
         )
       );
   }

@@ -4,7 +4,8 @@ import { MicroschemaReference } from '../models/common.model';
 import {
   ProjectReferenceFromServer,
   NodeChildrenInfoFromServer,
-  SchemaResponse
+  SchemaResponse,
+  NodeReferenceFromServer
 } from '../models/server-models';
 import { UserNodeReference, User } from '../models/user.model';
 import { TagFamily } from '../models/tag-family.model';
@@ -63,7 +64,7 @@ export const projectReference = new schema.Entity<ProjectReferenceFromServer>(
   optionsIndexedByUuid
 );
 
-export const meshNodeReference = new schema.Entity(
+export const meshNodeReference = new schema.Entity<NodeReferenceFromServer>(
   'meshNodeReference',
   {
     schema: meshSchema
@@ -150,3 +151,33 @@ export const meshNode = new schema.Entity<MeshNode>(
   optionsIndexedByUuid
 );
 meshNode.define({ parentNode: meshNode });
+
+export type MeshSchemaKey =
+  | 'meshSchema'
+  | 'meshMicroschema'
+  | 'meshNodeFieldMicronode'
+  | 'projectReference'
+  | 'meshNodeReference'
+  | 'userNodeReference'
+  | 'meshUser'
+  | 'meshRole'
+  | 'meshGroup'
+  | 'meshTagFamily'
+  | 'meshTag'
+  | 'meshNodeChildren'
+  | 'meshNode';
+
+export type MeshSchemaType =
+  | SchemaResponse
+  | MicroschemaReference
+  | NodeFieldMicronode
+  | ProjectReferenceFromServer
+  | NodeReferenceFromServer
+  | UserNodeReference
+  | User
+  | Role
+  | Group
+  | TagFamily
+  | Tag
+  | NodeChildrenInfoFromServer
+  | MeshNode;
