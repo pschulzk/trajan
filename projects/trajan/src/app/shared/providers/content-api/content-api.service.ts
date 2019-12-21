@@ -12,6 +12,7 @@ import { Receipt } from '../../models/receipt.model';
 import { HttpClient } from '@angular/common/http';
 import { map, tap, mergeMap } from 'rxjs/operators';
 import { ContentDatabaseService } from '../content-database/content-database.service';
+import { MeshNode } from '../../models/node.model';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +42,7 @@ export class ContentApiService<E> {
     this.apiSearchNodesUri = `${this.apiSearchUri}/nodes`;
   }
 
-  getTagFamiliesOfProject(): Observable<TagFamilyResponse[]> {
+  getTagFamiliesAll(): Observable<TagFamilyResponse[]> {
     return this.httpClient
       .get<TagFamilyListResponse>(`${this.apiTagfamilyUri}`)
       .pipe(
@@ -71,7 +72,7 @@ export class ContentApiService<E> {
   }
 
   getTagsAll(): Observable<TagResponse[]> {
-    return this.getTagFamiliesOfProject().pipe(
+    return this.getTagFamiliesAll().pipe(
       mergeMap((items: TagFamilyResponse[]) =>
         forkJoin(
           items.map((item: TagFamilyResponse) => {
@@ -94,30 +95,25 @@ export class ContentApiService<E> {
     );
   }
 
-  getReceipt(nodeUuid: string): Observable<NodeResponse<Receipt>> {
+  getReceipt(nodeUuid: string): Observable<MeshNode<E>> {
     return this.httpClient
-      .get<NodeResponse<Receipt>>(`${this.apiNodeUri}/${nodeUuid}`)
+      .get<MeshNode<E>>(`${this.apiNodeUri}/${nodeUuid}`)
       .pipe(
         tap(
-          (item: NodeResponse<Receipt>) =>
-            this.contentDatabase.storeNodes([item])
+          (item: MeshNode<E>) => this.contentDatabase.storeNodes([item])
           // this.store.dispatch(actionEntitiesReceiptAdd({ receipt: item }))
         )
       );
   }
 
-  getReceiptsOfProject(): Observable<NodeResponse<Receipt>[]> {
-    return this.httpClient.get<NodeListResponse<Receipt>>(this.apiNodeUri).pipe(
-      map((res: NodeListResponse<Receipt>) => res.data),
-      map(
-        (items: NodeResponse<Receipt>[]) =>
-          items.filter(item => item.schema.name === 'Rezept') as NodeResponse<
-            Receipt
-          >[]
+  getNodesAll(): Observable<MeshNode<E>[]> {
+    return this.httpClient.get<NodeListResponse<E>>(this.apiNodeUri).pipe(
+      map((res: NodeListResponse<E>) => res.data),
+      map((items: MeshNode<E>[]) =>
+        items.filter(item => item.schema.name === 'Rezept')
       ),
       tap(
-        (items: NodeResponse<Receipt>[]) =>
-          this.contentDatabase.storeNodes(items)
+        (items: MeshNode<E>[]) => this.contentDatabase.storeNodes(items)
         // items.forEach(item =>
         // this.store.dispatch(actionEntitiesReceiptAdd({ receipt: item }))
         // )
@@ -125,7 +121,7 @@ export class ContentApiService<E> {
     );
   }
 
-  getReceiptsByTagname(tagName: string): Observable<NodeResponse<Receipt>[]> {
+  getReceiptsByTagname(tagName: string): Observable<NodeResponse<E>[]> {
     const payload = {
       query: {
         nested: {
@@ -145,18 +141,18 @@ export class ContentApiService<E> {
       }
     };
     return this.httpClient
-      .post<NodeListResponse<Receipt>>(this.apiSearchNodesUri, payload)
+      .post<NodeListResponse<E>>(this.apiSearchNodesUri, payload)
       .pipe(
-        map((res: NodeListResponse<Receipt>) => res.data),
+        map((res: NodeListResponse<E>) => res.data),
         map(
-          (items: NodeResponse<any>[]) =>
-            items.filter(item => item.schema.name === 'Rezept') as NodeResponse<
+          (items: MeshNode<any>[]) =>
+            items.filter(item => item.schema.name === 'Rezept') as MeshNode<
               Receipt
             >[]
         ),
         tap(
-          (items: NodeResponse<Receipt>[]) =>
-            this.contentDatabase.storeNodes(items)
+          (items: MeshNode<E>[]) =>
+            this.contentDatabase.storeNodes(items as MeshNode<E>[])
           // items.forEach(item =>
           //   this.store.dispatch(actionEntitiesReceiptAdd({ receipt: item }))
           // )

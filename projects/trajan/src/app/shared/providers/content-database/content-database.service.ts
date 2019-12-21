@@ -26,7 +26,8 @@ import {
   SchemaResponse,
   ProjectReferenceFromServer,
   NodeReferenceFromServer,
-  NodeChildrenInfoFromServer
+  NodeChildrenInfoFromServer,
+  TagResponse
 } from '../../models/server-models';
 import { User, UserNodeReference } from '../../models/user.model';
 import { MicroschemaReference } from '../../models/common.model';
@@ -83,19 +84,19 @@ export class ContentDatabaseService<E> extends Dexie {
 
   async storeNodes(nodes: NodeResponse<E>[]): Promise<void[]> {
     const normalizedData = normalize(nodes, [this._normalizrSchemas.meshNode]);
-    return this._storeEntities(normalizedData as any);
+    return this._storeEntities(normalizedData);
   }
 
   async storeTagFamilies(tagFamilies: TagFamily[]): Promise<void[]> {
     const normalizedData = normalize(tagFamilies, [
       this._normalizrSchemas.meshTagFamily
     ]);
-    return this._storeEntities(normalizedData as any);
+    return this._storeEntities(normalizedData);
   }
 
-  async storeTags(tags: NodeResponse<E>[]): Promise<void[]> {
+  async storeTags(tags: Tag[]): Promise<void[]> {
     const normalizedData = normalize(tags, [this._normalizrSchemas.meshTag]);
-    return this._storeEntities(normalizedData as any);
+    return this._storeEntities(normalizedData);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -216,13 +217,17 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._entitiesGetFromTable('meshNode');
   }
 
-  private async _storeEntities(payload: {
-    entities: NormalizedSchema<
-      { [key: string]: { [uuid: string]: MeshSchemaType<E> } },
+  private async _storeEntities(
+    payload: NormalizedSchema<
+      {
+        [key: string]: {
+          [key: string]: MeshSchemaType<E>;
+        };
+      },
       any
-    >;
-  }): Promise<void[]> {
-    const storeActions: Promise<any>[] = [];
+    >
+  ): Promise<void[]> {
+    const storeActions: Promise<void>[] = [];
     Object.keys(payload.entities).forEach((entityKey: MeshSchemaKey<E>) => {
       if (!Object.keys(this.storeConfig).includes(entityKey)) {
         return;

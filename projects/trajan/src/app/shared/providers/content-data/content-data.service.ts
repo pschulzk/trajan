@@ -27,9 +27,9 @@ export class ContentDataService<E> {
     private contentDatabase: ContentDatabaseService<E>
   ) {
     // load entities
-    this.contentApi.getTagFamiliesOfProject().toPromise();
+    this.contentApi.getTagFamiliesAll().toPromise();
     this.contentApi.getTagsAll().toPromise();
-    this.contentApi.getReceiptsOfProject().toPromise();
+    this.contentApi.getNodesAll().toPromise();
 
     // get existing entities from state
     this.tags$ = from(this.contentDatabase.getMeshTagAll());
