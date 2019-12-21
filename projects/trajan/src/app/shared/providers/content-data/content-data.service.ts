@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable, from } from 'rxjs';
-import { normalize, schema } from 'normalizr';
-// import normalize from 'json-api-normalizer';
 import {
   NodeResponse,
   TagFamilyResponse,
@@ -9,41 +7,34 @@ import {
 } from '../../models/server-models';
 import { Receipt } from '../../models/receipt.model';
 import { map, tap, filter } from 'rxjs/operators';
-import { Store, select } from '@ngrx/store';
-import { AppState } from '../../../core/core.state';
 import { ContentApiService } from '../content-api/content-api.service';
-import {
-  selectEntitiesTags,
-  selectEntitiesTagFamilies,
-  selectEntitiesReceipts
-} from '../../../core/entities/entities.selectors';
 import { ContentDatabaseService } from '../content-database/content-database.service';
+import { MeshNode } from '../../models/node.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ContentDataService {
+export class ContentDataService<E> {
   tags$: Observable<TagResponse[]>;
   tagFamilies$: Observable<TagFamilyResponse[]>;
-  receipts$: Observable<NodeResponse<Receipt>[]>;
+  receipts$: Observable<MeshNode<Receipt>[]>;
 
   tagFamilyReceiptsUuid = '91d53bab0f954a76953bab0f955a7655';
   tagFamilyIngedrientsUuid = 'b9fe4f8fba1f48e4be4f8fba1f78e471';
 
   constructor(
-    private contentApi: ContentApiService,
-    private contentDatabase: ContentDatabaseService
-  ) // private store: Store<AppState>
-  {
+    private contentApi: ContentApiService<E>,
+    private contentDatabase: ContentDatabaseService<E>
+  ) {
     // load entities
     this.contentApi.getTagFamiliesOfProject().toPromise();
     this.contentApi.getTagsAll().toPromise();
     this.contentApi.getReceiptsOfProject().toPromise();
 
     // get existing entities from state
-    this.tags$ = from(this.contentDatabase.getTags());
-    this.tagFamilies$ = from(this.contentDatabase.getTagFamilies());
-    this.receipts$ = from(this.contentDatabase.getNodes());
+    this.tags$ = from(this.contentDatabase.getMeshTagAll());
+    this.tagFamilies$ = from(this.contentDatabase.getMeshTagFamilyAll());
+    this.receipts$ = from(this.contentDatabase.getMeshNodeAll());
 
     // this.tags$ = this.store.pipe(select(selectEntitiesTags)).pipe(
     //   filter((itemsIndexed: { [uuid: string]: TagResponse }) => !!itemsIndexed),
@@ -80,7 +71,7 @@ export class ContentDataService {
   }
 
   getReceipt(nodeUuid: string): Observable<NodeResponse<Receipt>> {
-    return from(this.contentDatabase.getNode(nodeUuid));
+    return from(this.contentDatabase.getMeshNode(nodeUuid));
     // return this.store.select(state => state.entities.receipt[nodeUuid]);
   }
 

@@ -11,19 +11,12 @@ import {
 import { Receipt } from '../../models/receipt.model';
 import { HttpClient } from '@angular/common/http';
 import { map, tap, mergeMap } from 'rxjs/operators';
-import { Store } from '@ngrx/store';
-import {
-  actionEntitiesReceiptAdd,
-  actionEntitiesTagFamilyAdd,
-  actionEntitiesTagAdd
-} from '../../../core/entities/entities.actions';
-import { AppState } from '../../../core/core.state';
 import { ContentDatabaseService } from '../content-database/content-database.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ContentApiService {
+export class ContentApiService<E> {
   apiPath = 'api/v1';
   projectName = 'trajan';
   apiUri: string;
@@ -38,9 +31,8 @@ export class ContentApiService {
 
   constructor(
     private httpClient: HttpClient,
-    private contentDatabase: ContentDatabaseService
-  ) // private store: Store<AppState>,
-  {
+    private contentDatabase: ContentDatabaseService<E>
+  ) {
     // assemble URIs
     this.apiUri = `/${this.apiPath}/${this.projectName}`;
     this.apiNodeUri = `/${this.apiPath}/${this.projectName}/nodes`;

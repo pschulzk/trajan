@@ -13,171 +13,185 @@ import { Tag } from '../models/tag.model';
 import { Role } from '../models/role.model';
 import { Group } from '../models/group.model';
 
+export interface MeshSchemaTypeMap<T> {
+  meshSchemaResponse: SchemaResponse;
+  meshMicroschemaReference: MicroschemaReference;
+  meshNodeFieldMicronode: NodeFieldMicronode;
+  projectReferenceFromServer: ProjectReferenceFromServer;
+  meshNodeReferenceFromServer: NodeReferenceFromServer;
+  userNodeReference: UserNodeReference;
+  meshUser: User;
+  meshRole: Role;
+  meshGroup: Group;
+  meshTagFamily: TagFamily;
+  meshTag: Tag;
+  meshNodeChildrenFromServer: NodeChildrenInfoFromServer;
+  meshNode: MeshNode<T>;
+}
+
+export type MeshSchemaKey<T> = keyof MeshSchemaTypeMap<T>;
+
+export type MeshSchemaType<T> = MeshSchemaTypeMap<T>[MeshSchemaKey<T>];
+
 /**
  * # Normalizr schemas for Mesh entities
  */
+export class NormalizrMeshSchemas<T> {
+  optionsIndexedByUuid = {
+    idAttribute: 'uuid'
+  };
 
-/**
- * ## predefined Normalizr Schema options for indexing via Mesh properties
- */
-const optionsIndexedByUuid = {
-  idAttribute: 'uuid'
-};
+  optionsIndexedbyJobUuid = {
+    idAttribute: 'jobUuid'
+  };
 
-const optionsIndexedbyJobUuid = {
-  idAttribute: 'jobUuid'
-};
+  optionsIndexedBySchemaUuid = {
+    idAttribute: 'schemaUuid'
+  };
 
-const optionsIndexedBySchemaUuid = {
-  idAttribute: 'schemaUuid'
-};
+  meshSchemaResponse: schema.Entity<SchemaResponse>;
 
-/**
- * ## Normalizr Schemas
- */
-export const meshSchema = new schema.Entity<SchemaResponse>(
-  'meshSchema',
-  {
-    // creator: meshUser, // defined later
-    // editor: meshUser, // defined later
-  },
-  optionsIndexedByUuid
-);
+  meshMicroschemaReference: schema.Entity<MicroschemaReference>;
 
-export const meshMicroschema = new schema.Entity<MicroschemaReference>(
-  'meshMicroschema',
-  {},
-  optionsIndexedbyJobUuid
-);
+  meshNodeFieldMicronode: schema.Entity<NodeFieldMicronode>;
 
-export const meshNodeFieldMicronode = new schema.Entity<NodeFieldMicronode>(
-  'meshNodeFieldMicronode',
-  {
-    microschema: meshMicroschema
-  },
-  optionsIndexedByUuid
-);
+  projectReferenceFromServer: schema.Entity<ProjectReferenceFromServer>;
 
-export const projectReference = new schema.Entity<ProjectReferenceFromServer>(
-  'projectReference',
-  {},
-  optionsIndexedByUuid
-);
+  meshNodeReferenceFromServer: schema.Entity<NodeReferenceFromServer>;
 
-export const meshNodeReference = new schema.Entity<NodeReferenceFromServer>(
-  'meshNodeReference',
-  {
-    schema: meshSchema
-  },
-  optionsIndexedByUuid
-);
+  userNodeReference: schema.Entity<UserNodeReference>;
 
-export const userNodeReference = new schema.Entity<UserNodeReference>(
-  'userNodeReference',
-  {
-    schema: meshSchema
-  },
-  optionsIndexedByUuid
-);
+  meshUser: schema.Entity<User>;
 
-export const meshUser = new schema.Entity<User>(
-  'meshUser',
-  {
-    // nodeReference: userNodeReference,
-  },
-  optionsIndexedByUuid
-);
-// meshUser.define({ editor: meshUser });
-meshSchema.define({
-  creator: meshUser,
-  editor: meshUser
-});
+  meshRole: schema.Entity<Role>;
 
-export const meshRole = new schema.Entity<Role>(
-  'meshRole',
-  {},
-  optionsIndexedByUuid
-);
+  meshGroup: schema.Entity<Group>;
 
-export const meshGroup = new schema.Entity<Group>(
-  'meshGroup',
-  {
-    creator: meshUser,
-    editor: meshUser,
-    roles: [meshRole]
-  },
-  optionsIndexedByUuid
-);
+  meshTagFamily: schema.Entity<TagFamily>;
 
-export const meshTagFamily = new schema.Entity<TagFamily>(
-  'meshTagFamily',
-  {
-    creator: meshUser,
-    editor: meshUser
-  },
-  optionsIndexedByUuid
-);
+  meshTag: schema.Entity<Tag>;
 
-export const meshTag = new schema.Entity<Tag>(
-  'meshTag',
-  {
-    creator: meshUser,
-    editor: meshUser,
-    tagFamily: meshTagFamily
-  },
-  optionsIndexedByUuid
-);
+  meshNodeChildrenFromServer: schema.Entity<NodeChildrenInfoFromServer>;
 
-export const meshNodeChildren = new schema.Entity<NodeChildrenInfoFromServer>(
-  'meshNodeChildren',
-  {},
-  optionsIndexedBySchemaUuid
-);
+  meshNode: schema.Entity<MeshNode<T>>;
 
-export const meshNode = new schema.Entity<MeshNode>(
-  'meshNode',
-  {
-    availableLanguages: {
-      publisher: meshUser
-    },
-    breadcrumb: [meshNodeReference],
-    childrenInfo: meshNodeChildren,
-    creator: meshUser,
-    editor: meshUser,
-    schema: meshSchema,
-    project: projectReference,
-    tags: [meshTag]
-  },
-  optionsIndexedByUuid
-);
-meshNode.define({ parentNode: meshNode });
+  constructor() {
+    /**
+     * ## Normalizr Schemas
+     */
+    this.meshSchemaResponse = new schema.Entity<SchemaResponse>(
+      'meshSchemaResponse',
+      {
+        // creator: meshUser, // defined later
+        // editor: meshUser, // defined later
+      },
+      this.optionsIndexedByUuid
+    );
 
-export type MeshSchemaKey =
-  | 'meshSchema'
-  | 'meshMicroschema'
-  | 'meshNodeFieldMicronode'
-  | 'projectReference'
-  | 'meshNodeReference'
-  | 'userNodeReference'
-  | 'meshUser'
-  | 'meshRole'
-  | 'meshGroup'
-  | 'meshTagFamily'
-  | 'meshTag'
-  | 'meshNodeChildren'
-  | 'meshNode';
+    this.meshMicroschemaReference = new schema.Entity<MicroschemaReference>(
+      'meshMicroschemaReference',
+      {},
+      this.optionsIndexedbyJobUuid
+    );
 
-export type MeshSchemaType =
-  | SchemaResponse
-  | MicroschemaReference
-  | NodeFieldMicronode
-  | ProjectReferenceFromServer
-  | NodeReferenceFromServer
-  | UserNodeReference
-  | User
-  | Role
-  | Group
-  | TagFamily
-  | Tag
-  | NodeChildrenInfoFromServer
-  | MeshNode;
+    this.meshNodeFieldMicronode = new schema.Entity<NodeFieldMicronode>(
+      'meshNodeFieldMicronode',
+      {
+        microschema: this.meshMicroschemaReference
+      },
+      this.optionsIndexedByUuid
+    );
+
+    this.projectReferenceFromServer = new schema.Entity<
+      ProjectReferenceFromServer
+    >('projectReferenceFromServer', {}, this.optionsIndexedByUuid);
+
+    this.meshNodeReferenceFromServer = new schema.Entity<
+      NodeReferenceFromServer
+    >(
+      'meshNodeReferenceFromServer',
+      {
+        schema: this.meshSchemaResponse
+      },
+      this.optionsIndexedByUuid
+    );
+
+    this.userNodeReference = new schema.Entity<UserNodeReference>(
+      'userNodeReference',
+      {
+        schema: this.meshSchemaResponse
+      },
+      this.optionsIndexedByUuid
+    );
+
+    this.meshUser = new schema.Entity<User>(
+      'meshUser',
+      {
+        // nodeReference: userNodeReference,
+      },
+      this.optionsIndexedByUuid
+    );
+
+    this.meshSchemaResponse.define({
+      creator: this.meshUser,
+      editor: this.meshUser
+    });
+
+    this.meshRole = new schema.Entity<Role>(
+      'meshRole',
+      {},
+      this.optionsIndexedByUuid
+    );
+
+    this.meshGroup = new schema.Entity<Group>(
+      'meshGroup',
+      {
+        creator: this.meshUser,
+        editor: this.meshUser,
+        roles: [this.meshRole]
+      },
+      this.optionsIndexedByUuid
+    );
+
+    this.meshTagFamily = new schema.Entity<TagFamily>(
+      'meshTagFamily',
+      {
+        creator: this.meshUser,
+        editor: this.meshUser
+      },
+      this.optionsIndexedByUuid
+    );
+
+    this.meshTag = new schema.Entity<Tag>(
+      'meshTag',
+      {
+        creator: this.meshUser,
+        editor: this.meshUser,
+        tagFamily: this.meshTagFamily
+      },
+      this.optionsIndexedByUuid
+    );
+
+    this.meshNodeChildrenFromServer = new schema.Entity<
+      NodeChildrenInfoFromServer
+    >('meshNodeChildrenFromServer', {}, this.optionsIndexedBySchemaUuid);
+
+    this.meshNode = new schema.Entity<MeshNode<T>>(
+      'meshNode',
+      {
+        availableLanguages: {
+          publisher: this.meshUser
+        },
+        breadcrumb: [this.meshNodeReferenceFromServer],
+        childrenInfo: this.meshNodeChildrenFromServer,
+        creator: this.meshUser,
+        editor: this.meshUser,
+        schema: this.meshSchemaResponse,
+        project: this.projectReferenceFromServer,
+        tags: [this.meshTag]
+      },
+      this.optionsIndexedByUuid
+    );
+    this.meshNode.define({ parentNode: this.meshNode });
+  }
+}
