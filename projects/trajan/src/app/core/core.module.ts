@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { NgModule, Optional, SkipSelf, ErrorHandler } from '@angular/core';
+import {
+  NgModule,
+  Optional,
+  SkipSelf,
+  ErrorHandler,
+  APP_INITIALIZER
+} from '@angular/core';
 import {
   HttpClientModule,
   HttpClient,
@@ -47,6 +53,7 @@ import {
 } from './settings/settings.selectors';
 import { EntitiesEffects } from './entities/entities.effects';
 import { UiMemoryEffects } from './ui-memory/ui-memory.effects';
+import { ConfigurationService } from './configuration/configuration.service';
 
 export {
   TitleService,
@@ -94,7 +101,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     environment.production
       ? []
       : StoreDevtoolsModule.instrument({
-          name: 'Angular NgRx Material Starter'
+          name: 'Selbermacher'
         }),
 
     // 3rd party
@@ -108,6 +115,15 @@ export function HttpLoaderFactory(http: HttpClient) {
   ],
   declarations: [],
   providers: [
+    ConfigurationService,
+    // construct global app configuration service, which will fetch external config data
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (configService: ConfigurationService) => () =>
+        configService.loadConfigurationData(),
+      deps: [ConfigurationService, HttpClient],
+      multi: true
+    },
     { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
     { provide: ErrorHandler, useClass: AppErrorHandler },
     { provide: RouterStateSerializer, useClass: CustomSerializer }

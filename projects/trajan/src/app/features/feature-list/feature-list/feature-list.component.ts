@@ -102,7 +102,7 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
 
   constructor(
     private router: Router,
-    private content: ContentDataService,
+    private content: ContentDataService<Receipt>,
     private store: Store<AppState>
   ) {}
 

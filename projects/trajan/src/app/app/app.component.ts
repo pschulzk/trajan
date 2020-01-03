@@ -51,7 +51,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   /** scroll distance from top */
   userHasScrolled$: Observable<boolean>;
 
-  brandName = 'HabIchDaheim';
+  brandName = env.appName;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,

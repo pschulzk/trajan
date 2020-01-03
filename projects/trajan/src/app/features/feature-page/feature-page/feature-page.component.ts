@@ -23,7 +23,7 @@ export class FeaturePageComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private content: ContentDataService
+    private content: ContentDataService<Receipt>
   ) {}
 
   ngOnInit() {

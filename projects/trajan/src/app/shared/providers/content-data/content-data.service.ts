@@ -10,6 +10,7 @@ import { map, tap, filter } from 'rxjs/operators';
 import { ContentApiService } from '../content-api/content-api.service';
 import { ContentDatabaseService } from '../content-database/content-database.service';
 import { MeshNode } from '../../models/node.model';
+import { ConfigurationService } from '../../../core/configuration/configuration.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,13 +20,17 @@ export class ContentDataService<E> {
   tagFamilies$: Observable<TagFamilyResponse[]>;
   receipts$: Observable<MeshNode<Receipt>[]>;
 
-  tagFamilyReceiptsUuid = '91d53bab0f954a76953bab0f955a7655';
-  tagFamilyIngedrientsUuid = 'b9fe4f8fba1f48e4be4f8fba1f78e471';
+  tagFamilyIngedrientsUuid: string;
+  tagFamilyReceiptsUuid: string;
 
   constructor(
+    private configurationService: ConfigurationService,
     private contentApi: ContentApiService<E>,
     private contentDatabase: ContentDatabaseService<E>
   ) {
+    // assign external values
+    this.tagFamilyIngedrientsUuid = this.configurationService.configData.tagFamilyIngedrientsUuid;
+    this.tagFamilyReceiptsUuid = this.configurationService.configData.tagFamilyReceiptsUuid;
     // load entities
     this.contentApi.getTagFamiliesAll().toPromise();
     this.contentApi.getTagsAll().toPromise();

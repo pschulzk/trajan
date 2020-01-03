@@ -1,17 +1,3 @@
-/**
- *
- * # Concept for generic IndexedDB data storing
- *
- * ## normalize response
- *
- * ## extract normalized entities
- *
- * ## create indexDB from normalized entities
- *
- * ## store normalized data in indexedDB
- *
- */
-
 import { Injectable } from '@angular/core';
 import Dexie from 'dexie';
 import { normalize, NormalizedSchema } from 'normalizr';
@@ -26,8 +12,7 @@ import {
   SchemaResponse,
   ProjectReferenceFromServer,
   NodeReferenceFromServer,
-  NodeChildrenInfoFromServer,
-  TagResponse
+  NodeChildrenInfoFromServer
 } from '../../models/server-models';
 import { User, UserNodeReference } from '../../models/user.model';
 import { MicroschemaReference } from '../../models/common.model';
@@ -36,6 +21,7 @@ import { Role } from '../../models/role.model';
 import { Group } from '../../models/group.model';
 import { TagFamily } from '../../models/tag-family.model';
 import { Tag } from '../../models/tag.model';
+import { ConfigurationService } from '../../../core/configuration/configuration.service';
 
 /**
  * # ContentDatabaseService
@@ -63,21 +49,27 @@ export class ContentDatabaseService<E> extends Dexie {
     meshNode: 'uuid'
   };
 
+  private _dataBaseName: string;
+
   private _storeTables: Dexie.Table<MeshSchemaType<E>, string>[] = [];
 
   private _normalizrSchemas: NormalizrMeshSchemas<E>;
 
-  constructor() {
-    super('Entities');
+  constructor(private configurationService: ConfigurationService) {
+    // construct service with parameter from external configuration
+    super(configurationService.configData.indexedDbName);
+    this._dataBaseName = this.configurationService.configData.indexedDbName;
+
+    // !!! clear tables for testing !!!
+    // this._clearTables();
+    this._clearDatabase();
+
     // initialize database
     this.version(1).stores(this.storeConfig);
     // initialize IndexedDB tables
     this._storeTables = Object.keys(this.storeConfig).map(entityKey =>
       this.table<MeshSchemaType<E>, string>(entityKey)
     );
-    // Dexie.exists(dbName)
-    // clear tables to prepare for new data !!!
-    this._clearTables();
 
     this._normalizrSchemas = new NormalizrMeshSchemas<E>();
   }
@@ -304,5 +296,9 @@ export class ContentDatabaseService<E> extends Dexie {
       (table: Dexie.Table<MeshSchemaType<E>, string>) => table.clear()
     );
     return Promise.all(storeActions);
+  }
+
+  private async _clearDatabase(): Promise<void> {
+    Dexie.delete(this._dataBaseName);
   }
 }

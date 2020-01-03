@@ -1,7 +1,7 @@
 {
   "/api": {
-    "target": "http://habichdaheim.at:8080",
-    "secure": false,
+    "target": "https://selbermacher.app",
+    "secure": true,
     "logLevel": "debug",
     "changeOrigin": true
   }

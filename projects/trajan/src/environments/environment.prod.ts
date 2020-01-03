@@ -1,11 +1,12 @@
 const packageJson = require('../../../../package.json');
 
 export const environment = {
-  appName: 'habichdaheim',
+  appConfUrl: '/assets/app.conf.js',
+  appName: 'Selbermacher',
   envName: 'PROD',
   production: true,
   test: false,
-  i18nPrefix: '/habichdaheim',
+  i18nPrefix: '/selbermacher',
   versions: {
     app: packageJson.version,
     angular: packageJson.dependencies['@angular/core'],
