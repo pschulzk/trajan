@@ -2,29 +2,34 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment as env } from '../../../environments/environment';
 
-export interface AppConfigData {
+export interface AppConfig {
   indexedDbName: string;
   tagFamilyIngedrientsUuid: string;
   tagFamilyReceiptsUuid: string;
+  apiPath: string;
+  projectName: string;
 }
 
+/**
+ * @description Fetch external configuration JSON data from path
+ * defined in `/<project>/src/environments/<environment>.appConfUrl`.
+ */
 @Injectable()
 export class ConfigurationService {
   private readonly configUrlPath = env.appConfUrl;
-  private _configData: AppConfigData;
+  private _configData: AppConfig;
 
   constructor(private http: HttpClient) {}
 
   loadConfigurationData() {
     this.http
-      .get<AppConfigData>(this.configUrlPath)
-      .subscribe((result: AppConfigData) => {
-        this._configData = result;
-        console.log('!!! ConfigurationService.configData:', this._configData);
+      .get<AppConfig>(this.configUrlPath)
+      .subscribe((response: AppConfig) => {
+        this._configData = response;
       });
   }
 
-  get configData(): AppConfigData {
+  get configData(): AppConfig {
     return this._configData;
   }
 }

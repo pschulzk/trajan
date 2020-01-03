@@ -13,33 +13,39 @@ import { HttpClient } from '@angular/common/http';
 import { map, tap, mergeMap } from 'rxjs/operators';
 import { ContentDatabaseService } from '../content-database/content-database.service';
 import { MeshNode } from '../../models/node.model';
+import { ConfigurationService } from '../../../core/configuration/configuration.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContentApiService<E> {
-  apiPath = 'api/v1';
-  projectName = 'trajan';
+  apiPath: string;
+  projectName: string;
   apiUri: string;
   apiNodeUri: string;
   apiTagfamilyUri: string;
   apiTagUri: string;
-  apiSearchUri = '/api/v2/search';
   apiSearchNodesUri: string;
 
-  tagFamilyReceiptsUuid = '91d53bab0f954a76953bab0f955a7655';
-  tagFamilyIngedrientsUuid = 'b9fe4f8fba1f48e4be4f8fba1f78e471';
+  tagFamilyReceiptsUuid: string;
+  tagFamilyIngedrientsUuid: string;
 
   constructor(
     private httpClient: HttpClient,
+    private configurationService: ConfigurationService,
     private contentDatabase: ContentDatabaseService<E>
   ) {
+    // assign external values
+    this.apiPath = this.configurationService.configData.apiPath;
+    this.projectName = this.configurationService.configData.projectName;
+    this.tagFamilyIngedrientsUuid = this.configurationService.configData.tagFamilyIngedrientsUuid;
+    this.tagFamilyReceiptsUuid = this.configurationService.configData.tagFamilyReceiptsUuid;
     // assemble URIs
-    this.apiUri = `/${this.apiPath}/${this.projectName}`;
-    this.apiNodeUri = `/${this.apiPath}/${this.projectName}/nodes`;
-    this.apiTagfamilyUri = `/${this.apiPath}/${this.projectName}/tagFamilies`;
-    this.apiTagUri = `/${this.apiPath}/${this.projectName}/tags`;
-    this.apiSearchNodesUri = `${this.apiSearchUri}/nodes`;
+    this.apiUri = `${this.apiPath}/${this.projectName}`;
+    this.apiNodeUri = `${this.apiUri}/nodes`;
+    this.apiTagfamilyUri = `${this.apiUri}/tagFamilies`;
+    this.apiTagUri = `${this.apiUri}/tags`;
+    this.apiSearchNodesUri = `${this.apiUri}/search/nodes`;
   }
 
   getTagFamiliesAll(): Observable<TagFamilyResponse[]> {

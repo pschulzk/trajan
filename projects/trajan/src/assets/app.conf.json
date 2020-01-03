@@ -1,5 +1,7 @@
 {
+  "apiPath": "/api/v2",
   "indexedDbName": "entities",
+  "projectName": "trajan",
   "tagFamilyIngedrientsUuid": "b9fe4f8fba1f48e4be4f8fba1f78e471",
   "tagFamilyReceiptsUuid": "91d53bab0f954a76953bab0f955a7655"
 }

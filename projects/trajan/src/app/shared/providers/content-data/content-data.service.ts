@@ -6,11 +6,10 @@ import {
   TagResponse
 } from '../../models/server-models';
 import { Receipt } from '../../models/receipt.model';
-import { map, tap, filter } from 'rxjs/operators';
+import { map, filter } from 'rxjs/operators';
 import { ContentApiService } from '../content-api/content-api.service';
 import { ContentDatabaseService } from '../content-database/content-database.service';
 import { MeshNode } from '../../models/node.model';
-import { ConfigurationService } from '../../../core/configuration/configuration.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,13 +23,9 @@ export class ContentDataService<E> {
   tagFamilyReceiptsUuid: string;
 
   constructor(
-    private configurationService: ConfigurationService,
     private contentApi: ContentApiService<E>,
     private contentDatabase: ContentDatabaseService<E>
   ) {
-    // assign external values
-    this.tagFamilyIngedrientsUuid = this.configurationService.configData.tagFamilyIngedrientsUuid;
-    this.tagFamilyReceiptsUuid = this.configurationService.configData.tagFamilyReceiptsUuid;
     // load entities
     this.contentApi.getTagFamiliesAll().toPromise();
     this.contentApi.getTagsAll().toPromise();
