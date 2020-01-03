@@ -46,7 +46,7 @@
     </div>
   </div>
 
-  <div *ngIf="(receiptCategories$ | async) as receiptCategories; else loading" class="row">
+  <!-- <div *ngIf="(receiptCategories$ | async) as receiptCategories; else loading" class="row">
     <div
       *ngFor="let receiptCategory of receiptCategories; let i = index"
       class="col-sm-12 col-md-10 col-lg-6 offset-sm-0 offset-md-1 offset-lg-3"
@@ -90,7 +90,7 @@
 
       <br>
     </div>
-  </div>
+  </div> -->
 
   <ng-template #loading>
     Lädt...

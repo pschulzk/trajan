@@ -60,10 +60,6 @@ export class ContentDatabaseService<E> extends Dexie {
     super(configurationService.configData.indexedDbName);
     this._dataBaseName = this.configurationService.configData.indexedDbName;
 
-    // !!! clear tables for testing !!!
-    // this._clearTables();
-    this._clearDatabase();
-
     // initialize database
     this.version(1).stores(this.storeConfig);
     // initialize IndexedDB tables
@@ -234,12 +230,12 @@ export class ContentDatabaseService<E> extends Dexie {
       const entitiesTobeAdded = payload.entities[entityKey];
       if (entitiesTobeAdded && Object.keys(entitiesTobeAdded).length > 0) {
         Object.keys(entitiesTobeAdded).forEach(id => {
+          // ignore empty objects
+          if (Object.keys(entitiesTobeAdded[id]).length === 0) {
+            return;
+          }
           storeActions.push(
-            this._tableAddEntity(
-              entityTable.name,
-              entityTable,
-              entitiesTobeAdded[id]
-            )
+            this._tablePutEntity(entityTable, entitiesTobeAdded[id])
           );
         });
       }
@@ -273,20 +269,14 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._tableGet(tableName).toArray() as Dexie.Promise<T[]>;
   }
 
-  private async _tableAddEntity(
-    tableKey: string,
+  private async _tablePutEntity(
     table: Dexie.Table<MeshSchemaType<E>, string>,
     entities: MeshSchemaType<E>
   ): Promise<void> {
-    return table.put(entities, tableKey).then(
+    return table.put(entities).then(
       () => {},
       (error: Dexie.DexieError) => {
-        if (error instanceof Dexie.ConstraintError) {
-          // ignore if entity already exists
-          return;
-        } else {
-          throw new Error(error.inner.message);
-        }
+        throw new Error(error.inner.message);
       }
     );
   }

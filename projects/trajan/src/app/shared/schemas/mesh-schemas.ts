@@ -34,7 +34,7 @@ export type MeshSchemaKey<T> = keyof MeshSchemaTypeMap<T>;
 export type MeshSchemaType<T> = MeshSchemaTypeMap<T>[MeshSchemaKey<T>];
 
 /**
- * # Normalizr schemas for Mesh entities
+ * Normalizr schemas for Mesh entities
  */
 export class NormalizrMeshSchemas<T> {
   optionsIndexedByUuid = {
@@ -76,9 +76,8 @@ export class NormalizrMeshSchemas<T> {
   meshNode: schema.Entity<MeshNode<T>>;
 
   constructor() {
-    /**
-     * ## Normalizr Schemas
-     */
+    // Normalizr Schemas:
+
     this.meshSchemaResponse = new schema.Entity<SchemaResponse>(
       'meshSchemaResponse',
       {
