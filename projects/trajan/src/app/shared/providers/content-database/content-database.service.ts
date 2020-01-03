@@ -44,9 +44,9 @@ export class ContentDatabaseService<E> extends Dexie {
     meshRole: 'uuid',
     meshGroup: 'uuid',
     meshTagFamily: 'uuid',
-    meshTag: 'uuid',
+    meshTag: 'uuid, tagFamily',
     meshNodeChildrenFromServer: 'schemaUuid',
-    meshNode: 'uuid'
+    meshNode: 'uuid, schema, [tags], creator, editor'
   };
 
   private _dataBaseName: string;
@@ -93,24 +93,33 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._entityGetFromTableByUuid('meshSchemaResponse', uuid);
   }
 
-  async getMeshSchemaAll(): Promise<SchemaResponse[]> {
-    return this._entitiesGetFromTable('meshSchemaResponse');
+  async getMeshSchemaAll(filter?: {
+    attribute: keyof SchemaResponse;
+    value: any;
+  }): Promise<SchemaResponse[]> {
+    return this._entitiesGetFromTable('meshSchemaResponse', filter);
   }
 
   async getMeshMicroschema(uuid: string): Promise<MicroschemaReference> {
     return this._entityGetFromTableByUuid('meshMicroschemaReference', uuid);
   }
 
-  async getMeshMicroschemaAll(): Promise<MicroschemaReference[]> {
-    return this._entitiesGetFromTable('meshMicroschemaReference');
+  async getMeshMicroschemaAll(filter?: {
+    attribute: keyof MicroschemaReference;
+    value: any;
+  }): Promise<MicroschemaReference[]> {
+    return this._entitiesGetFromTable('meshMicroschemaReference', filter);
   }
 
   async getMeshNodeFieldMicronode(uuid: string): Promise<NodeFieldMicronode> {
     return this._entityGetFromTableByUuid('meshNodeFieldMicronode', uuid);
   }
 
-  async getMeshNodeFieldMicronodeAll(): Promise<NodeFieldMicronode[]> {
-    return this._entitiesGetFromTable('meshNodeFieldMicronode');
+  async getMeshNodeFieldMicronodeAll(filter?: {
+    attribute: keyof NodeFieldMicronode;
+    value: any;
+  }): Promise<NodeFieldMicronode[]> {
+    return this._entitiesGetFromTable('meshNodeFieldMicronode', filter);
   }
 
   async getProjectReferenceFromServer(
@@ -119,10 +128,11 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._entityGetFromTableByUuid('projectReferenceFromServer', uuid);
   }
 
-  async getProjectReferenceFromServerAll(): Promise<
-    ProjectReferenceFromServer[]
-  > {
-    return this._entitiesGetFromTable('projectReferenceFromServer');
+  async getProjectReferenceFromServerAll(filter?: {
+    attribute: keyof ProjectReferenceFromServer;
+    value: any;
+  }): Promise<ProjectReferenceFromServer[]> {
+    return this._entitiesGetFromTable('projectReferenceFromServer', filter);
   }
 
   async getMeshNodeReferenceFromServer(
@@ -131,59 +141,91 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._entityGetFromTableByUuid('meshNodeReferenceFromServer', uuid);
   }
 
-  async getMeshNodeReferenceFromServerAll(): Promise<
-    NodeReferenceFromServer[]
-  > {
-    return this._entitiesGetFromTable('meshNodeReferenceFromServer');
+  async getMeshNodeReferenceFromServerAll(filter?: {
+    attribute: keyof NodeReferenceFromServer;
+    value: any;
+  }): Promise<NodeReferenceFromServer[]> {
+    return this._entitiesGetFromTable('meshNodeReferenceFromServer', filter);
   }
 
   async getUserNodeReference(uuid: string): Promise<UserNodeReference> {
     return this._entityGetFromTableByUuid('userNodeReference', uuid);
   }
 
-  async getUserNodeReferenceAll(): Promise<UserNodeReference[]> {
-    return this._entitiesGetFromTable('userNodeReference');
+  async getUserNodeReferenceAll(filter?: {
+    attribute: keyof UserNodeReference;
+    value: any;
+  }): Promise<UserNodeReference[]> {
+    return this._entitiesGetFromTable('userNodeReference', filter);
   }
 
   async getMeshUser(uuid: string): Promise<User> {
     return this._entityGetFromTableByUuid('meshUser', uuid);
   }
 
-  async getMeshUserAll(): Promise<User[]> {
-    return this._entitiesGetFromTable('meshUser');
+  async getMeshUserAll(filter?: {
+    attribute: keyof User;
+    value: any;
+  }): Promise<User[]> {
+    return this._entitiesGetFromTable('meshUser', filter);
   }
 
   async getMeshRole(uuid: string): Promise<Role> {
     return this._entityGetFromTableByUuid('meshRole', uuid);
   }
 
-  async getMeshRoleAll(): Promise<Role[]> {
-    return this._entitiesGetFromTable('meshRole');
+  async getMeshRoleAll(filter?: {
+    attribute: keyof Role;
+    value: any;
+  }): Promise<Role[]> {
+    return this._entitiesGetFromTable('meshRole', filter);
   }
 
   async getMeshGroup(uuid: string): Promise<Group> {
     return this._entityGetFromTableByUuid('meshGroup', uuid);
   }
 
-  async getMeshGroupAll(): Promise<Group[]> {
-    return this._entitiesGetFromTable('meshGroup');
+  async getMeshGroupAll(filter?: {
+    attribute: keyof Group;
+    value: any;
+  }): Promise<Group[]> {
+    return this._entitiesGetFromTable('meshGroup', filter);
   }
 
   async getMeshTagFamily(uuid: string): Promise<TagFamily> {
     return this._entityGetFromTableByUuid('meshTagFamily', uuid);
   }
 
-  async getMeshTagFamilyAll(): Promise<TagFamily[]> {
-    return this._entitiesGetFromTable('meshTagFamily');
+  async getMeshTagFamilyAll(filter?: {
+    attribute: keyof TagFamily;
+    value: any;
+  }): Promise<TagFamily[]> {
+    return this._entitiesGetFromTable('meshTagFamily', filter);
   }
 
   async getMeshTag(uuid: string): Promise<Tag> {
     return this._entityGetFromTableByUuid('meshTag', uuid);
   }
 
-  async getMeshTagAll(): Promise<Tag[]> {
-    return this._entitiesGetFromTable('meshTag');
+  async getMeshTagAll(filter?: {
+    attribute: keyof Tag;
+    value: any;
+  }): Promise<Tag[]> {
+    return this._entitiesGetFromTable('meshTag', filter)
+      .then(success => success)
+      .catch(error =>
+        console.log(`!!! ${this.constructor.name}.error:`, error)
+      ) as Promise<Tag[]>;
   }
+
+  // async getMeshTagsByTagFamily(
+  //   filter?: {
+  //     attribute: keyof Tag,
+  //     value: any,
+  //   },
+  // ): Promise<Tag[]> {
+  //   return this._entitiesGetFromTable('meshTag', filter);
+  // }
 
   async getMeshNodeChildrenFromServer(
     uuid: string
@@ -191,18 +233,29 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._entityGetFromTableByUuid('meshNodeChildrenFromServer', uuid);
   }
 
-  async getMeshNodeChildrenFromServerAll(): Promise<
-    NodeChildrenInfoFromServer[]
-  > {
-    return this._entitiesGetFromTable('meshNodeChildrenFromServer');
+  async getMeshNodeChildrenFromServerAll(filter?: {
+    attribute: keyof NodeChildrenInfoFromServer;
+    value: any;
+  }): Promise<NodeChildrenInfoFromServer[]> {
+    return this._entitiesGetFromTable('meshNodeChildrenFromServer', filter);
   }
 
   async getMeshNode(uuid: string): Promise<MeshNode<E>> {
     return this._entityGetFromTableByUuid('meshNode', uuid);
   }
 
-  async getMeshNodeAll(): Promise<MeshNode<E>[]> {
-    return this._entitiesGetFromTable('meshNode');
+  async getMeshNodeAll(filter?: {
+    attribute: keyof MeshNode<E>;
+    value: any;
+  }): Promise<MeshNode<E>[]> {
+    return this._entitiesGetFromTable('meshNode', filter);
+  }
+
+  async getMeshNodesByTagUuids(tagUuids: string[]): Promise<MeshNode<E>[]> {
+    return this._tableGet('meshNode')
+      .where('tags')
+      .anyOf(tagUuids)
+      .toArray() as Dexie.Promise<MeshNode<E>[]>;
   }
 
   private async _storeEntities(
@@ -262,11 +315,36 @@ export class ContentDatabaseService<E> extends Dexie {
       .first() as Dexie.Promise<T>;
   }
 
+  // private _entitiesGetFromTable<
+  //   K extends MeshSchemaKey<E>,
+  //   T extends MeshSchemaTypeMap<T>[K]
+  // >(tableName: K): Promise<T[]> {
+  //   return this._tableGet(tableName).toArray() as Dexie.Promise<T[]>;
+  // }
+
   private _entitiesGetFromTable<
     K extends MeshSchemaKey<E>,
     T extends MeshSchemaTypeMap<T>[K]
-  >(tableName: K): Promise<T[]> {
-    return this._tableGet(tableName).toArray() as Dexie.Promise<T[]>;
+  >(
+    tableName: K,
+    filter?: {
+      attribute: keyof T;
+      value: any;
+    }
+  ): Promise<T[]> {
+    if (filter) {
+      console.log(
+        `!!! ${this.constructor.name}._entitiesGetFromTable:`,
+        filter
+      );
+      return this._tableGet(tableName)
+        .where(filter.attribute as string)
+        .equals(filter.value)
+        .toArray() as Dexie.Promise<T[]>;
+      // .catch(error => console.log(`!!! ${this.constructor.name}.error:`, filter)) as Dexie.Promise<T[]>;
+    } else {
+      return this._tableGet(tableName).toArray() as Dexie.Promise<T[]>;
+    }
   }
 
   private async _tablePutEntity(

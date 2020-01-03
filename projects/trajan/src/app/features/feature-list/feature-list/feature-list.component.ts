@@ -16,7 +16,13 @@ import {
   TagResponse
 } from '../../../shared/models/server-models';
 import { Receipt } from '../../../shared/models/receipt.model';
-import { Observable, combineLatest, Subject, BehaviorSubject } from 'rxjs';
+import {
+  Observable,
+  combineLatest,
+  Subject,
+  BehaviorSubject,
+  from
+} from 'rxjs';
 import { Router } from '@angular/router';
 import {
   filter,
@@ -107,23 +113,25 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
   ) {}
 
   ngOnInit() {
-    this.receiptIngredientTags$ = this.content.getTagsOfTagFamily(
-      this.content.tagFamilyIngedrientsUuid
+    this.receiptIngredientTags$ = from(
+      this.content.getTagsOfTagFamily(this.content.tagFamilyIngedrientsUuid)
     );
 
     this.receiptIngredientTags$
       .pipe(
-        map(tags =>
-          tags
-            .map(tag => tag.name)
-            .filter(tag => !this.tagsSelected.includes(tag))
+        map(
+          tags =>
+            tags &&
+            tags
+              .map(tag => tag.name)
+              .filter(tag => !this.tagsSelected.includes(tag))
         ),
         takeUntil(this.destroyed)
       )
       .subscribe(tags => (this.allTags = tags));
 
-    this.receiptCategories$ = this.content.getReceiptCategories();
-    this.receipts$ = this.content.getReceiptsAll();
+    this.receiptCategories$ = from(this.content.getReceiptCategories());
+    this.receipts$ = from(this.content.getReceiptsAll());
 
     this.filteredTags$ = this.inputTagIncludeControl.valueChanges.pipe(
       map((tag: string | null) =>
@@ -161,6 +169,7 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
         return receipts.filter(receipt => {
           const matchesReceiptCategory =
             receipt &&
+            receipt.tags &&
             receipt.tags.some(tag => {
               return tag.name === receiptCategoryName;
             });
@@ -171,7 +180,8 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
           const matchesIngredientTag =
             receipt && this.tagsSelected.length === 0
               ? true
-              : this.tagsSelected.some(tagSelected => {
+              : this.tagsSelected &&
+                this.tagsSelected.some(tagSelected => {
                   return receipt.tags
                     .map(tag => tag.name)
                     .includes(tagSelected);

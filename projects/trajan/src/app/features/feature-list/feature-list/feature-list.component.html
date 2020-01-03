@@ -46,7 +46,11 @@
     </div>
   </div>
 
-  <!-- <div *ngIf="(receiptCategories$ | async) as receiptCategories; else loading" class="row">
+  <!-- <pre class="row">
+    receiptCategories: {{ (receiptCategories$ | async | json) }}
+  </pre> -->
+
+  <div *ngIf="(receiptCategories$ | async) as receiptCategories; else loading" class="row">
     <div
       *ngFor="let receiptCategory of receiptCategories; let i = index"
       class="col-sm-12 col-md-10 col-lg-6 offset-sm-0 offset-md-1 offset-lg-3"
@@ -63,7 +67,9 @@
             <mat-panel-title>
               <div class="panel-title">
                 <div>{{ receiptCategory.name }}</div>
-                <div>{{ (getReceiptsOfReceiptCategory(receiptCategory.name) | async).length + ' Rezepte' }}</div>
+                <!-- <div *ngIf="(getReceiptsOfReceiptCategory(receiptCategory.name) | async)">
+                  {{ (getReceiptsOfReceiptCategory(receiptCategory.name) | async).length + ' Rezepte' }}
+                </div> -->
               </div>
             </mat-panel-title>
           </mat-expansion-panel-header>
@@ -90,7 +96,7 @@
 
       <br>
     </div>
-  </div> -->
+  </div>
 
   <ng-template #loading>
     Lädt...

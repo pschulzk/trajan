@@ -4,6 +4,7 @@ import { environment as env } from '../../../environments/environment';
 
 export interface AppConfig {
   indexedDbName: string;
+  schemaReceiptUuid: string;
   tagFamilyIngedrientsUuid: string;
   tagFamilyReceiptsUuid: string;
   apiPath: string;
