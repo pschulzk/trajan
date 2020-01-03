@@ -17,7 +17,7 @@ import { MeshNode } from '../../models/node.model';
 export class ContentDataService<E> {
   tags$: Observable<TagResponse[]>;
   tagFamilies$: Observable<TagFamilyResponse[]>;
-  receipts$: Observable<MeshNode<Receipt>[]>;
+  receipts$: Observable<MeshNode<E>[]>;
 
   tagFamilyIngedrientsUuid: string;
   tagFamilyReceiptsUuid: string;
@@ -48,7 +48,7 @@ export class ContentDataService<E> {
     // );
     // this.receipts$ = this.store.pipe(select(selectEntitiesReceipts)).pipe(
     //   filter(
-    //     (itemsIndexed: { [uuid: string]: NodeResponse<Receipt> }) =>
+    //     (itemsIndexed: { [uuid: string]: NodeResponse<E> }) =>
     //       !!itemsIndexed
     //   ),
     //   map(itemsIndexed => Object.values(itemsIndexed))
@@ -70,16 +70,16 @@ export class ContentDataService<E> {
     return this.getTagsOfTagFamily(this.tagFamilyReceiptsUuid);
   }
 
-  getReceipt(nodeUuid: string): Observable<NodeResponse<Receipt>> {
+  getReceipt(nodeUuid: string): Observable<NodeResponse<E>> {
     return from(this.contentDatabase.getMeshNode(nodeUuid));
     // return this.store.select(state => state.entities.receipt[nodeUuid]);
   }
 
-  getReceiptsAll(): Observable<NodeResponse<Receipt>[]> {
+  getReceiptsAll(): Observable<NodeResponse<E>[]> {
     return this.receipts$;
   }
 
-  getReceiptsByTagname(tagName: string): Observable<NodeResponse<Receipt>[]> {
+  getReceiptsByTagname(tagName: string): Observable<NodeResponse<E>[]> {
     return this.receipts$.pipe(
       map(items =>
         items.filter(item => item.tags.find(tag => tag.name === tagName))
