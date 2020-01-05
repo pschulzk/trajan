@@ -35,5 +35,6 @@
   "anms.settings.title": "Nastavenia",
   "anms.title.long": "Trajan",
   "anms.title.short": "Trajan",
-  "anms.title.receipt": "Receipt"
+  "anms.title.receipt": "Receipt",
+  "anms.error.notfound.entity": "Data could not be found"
 }

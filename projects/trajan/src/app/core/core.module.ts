@@ -113,6 +113,7 @@ export function HttpLoaderFactory(http: HttpClient) {
   ],
   declarations: [],
   providers: [
+    AppErrorHandler,
     ConfigurationService,
     // construct global app configuration service, which will fetch external config data
     {

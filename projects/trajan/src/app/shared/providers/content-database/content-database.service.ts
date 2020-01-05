@@ -22,6 +22,7 @@ import { Group } from '../../models/group.model';
 import { TagFamily } from '../../models/tag-family.model';
 import { Tag } from '../../models/tag.model';
 import { ConfigurationService } from '../../../core/configuration/configuration.service';
+import { AppErrorHandler } from '../../../core/error-handler/app-error-handler.service';
 
 export interface ContentDatabaseIndices {
   meshSchemaResponse: 'uuid';
@@ -90,7 +91,10 @@ export class ContentDatabaseService<E> extends Dexie {
 
   ////////////////////////////////////////////////////////////////////////////////////////
 
-  constructor(private configurationService: ConfigurationService) {
+  constructor(
+    private configurationService: ConfigurationService,
+    private errorHandler: AppErrorHandler
+  ) {
     // construct service with parameter from external configuration
     super(configurationService.configData.indexedDbName);
     this._dataBaseName = this.configurationService.configData.indexedDbName;
@@ -119,7 +123,7 @@ export class ContentDatabaseService<E> extends Dexie {
 
   ////////////////////////////////////////////////////////////////////////////////////////
 
-  async getMeshSchema(uuid: string): Promise<SchemaResponse> {
+  async getMeshSchema(uuid: string): Promise<SchemaResponse | Error> {
     return this._tableEntityGetByUuid('meshSchemaResponse', uuid);
   }
 
@@ -135,7 +139,9 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._tableEntitiesGet('meshSchemaResponse', filter, filterFn);
   }
 
-  async getMeshMicroschema(uuid: string): Promise<MicroschemaReference> {
+  async getMeshMicroschema(
+    uuid: string
+  ): Promise<MicroschemaReference | Error> {
     return this._tableEntityGetByUuid('meshMicroschemaReference', uuid);
   }
 
@@ -151,7 +157,9 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._tableEntitiesGet('meshMicroschemaReference', filter, filterFn);
   }
 
-  async getMeshNodeFieldMicronode(uuid: string): Promise<NodeFieldMicronode> {
+  async getMeshNodeFieldMicronode(
+    uuid: string
+  ): Promise<NodeFieldMicronode | Error> {
     return this._tableEntityGetByUuid('meshNodeFieldMicronode', uuid);
   }
 
@@ -169,7 +177,7 @@ export class ContentDatabaseService<E> extends Dexie {
 
   async getProjectReferenceFromServer(
     uuid: string
-  ): Promise<ProjectReferenceFromServer> {
+  ): Promise<ProjectReferenceFromServer | Error> {
     return this._tableEntityGetByUuid('projectReferenceFromServer', uuid);
   }
 
@@ -191,7 +199,7 @@ export class ContentDatabaseService<E> extends Dexie {
 
   async getMeshNodeReferenceFromServer(
     uuid: string
-  ): Promise<NodeReferenceFromServer> {
+  ): Promise<NodeReferenceFromServer | Error> {
     return this._tableEntityGetByUuid('meshNodeReferenceFromServer', uuid);
   }
 
@@ -211,7 +219,7 @@ export class ContentDatabaseService<E> extends Dexie {
     );
   }
 
-  async getUserNodeReference(uuid: string): Promise<UserNodeReference> {
+  async getUserNodeReference(uuid: string): Promise<UserNodeReference | Error> {
     return this._tableEntityGetByUuid('userNodeReference', uuid);
   }
 
@@ -227,7 +235,7 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._tableEntitiesGet('userNodeReference', filter, filterFn);
   }
 
-  async getMeshUser(uuid: string): Promise<User> {
+  async getMeshUser(uuid: string): Promise<User | Error> {
     return this._tableEntityGetByUuid('meshUser', uuid);
   }
 
@@ -243,7 +251,7 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._tableEntitiesGet('meshUser', filter, filterFn);
   }
 
-  async getMeshRole(uuid: string): Promise<Role> {
+  async getMeshRole(uuid: string): Promise<Role | Error> {
     return this._tableEntityGetByUuid('meshRole', uuid);
   }
 
@@ -259,7 +267,7 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._tableEntitiesGet('meshRole', filter, filterFn);
   }
 
-  async getMeshGroup(uuid: string): Promise<Group> {
+  async getMeshGroup(uuid: string): Promise<Group | Error> {
     return this._tableEntityGetByUuid('meshGroup', uuid);
   }
 
@@ -275,7 +283,7 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._tableEntitiesGet('meshGroup', filter, filterFn);
   }
 
-  async getMeshTagFamily(uuid: string): Promise<TagFamily> {
+  async getMeshTagFamily(uuid: string): Promise<TagFamily | Error> {
     return this._tableEntityGetByUuid('meshTagFamily', uuid);
   }
 
@@ -291,7 +299,7 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._tableEntitiesGet('meshTagFamily', filter, filterFn);
   }
 
-  async getMeshTag(uuid: string): Promise<Tag> {
+  async getMeshTag(uuid: string): Promise<Tag | Error> {
     return this._tableEntityGetByUuid('meshTag', uuid);
   }
 
@@ -309,7 +317,7 @@ export class ContentDatabaseService<E> extends Dexie {
 
   async getMeshNodeChildrenFromServer(
     uuid: string
-  ): Promise<NodeChildrenInfoFromServer> {
+  ): Promise<NodeChildrenInfoFromServer | Error> {
     return this._tableEntityGetByUuid('meshNodeChildrenFromServer', uuid);
   }
 
@@ -329,7 +337,7 @@ export class ContentDatabaseService<E> extends Dexie {
     );
   }
 
-  async getMeshNode(uuid: string): Promise<MeshNode<E>> {
+  async getMeshNode(uuid: string): Promise<MeshNode<E> | Error> {
     return this._tableEntityGetByUuid('meshNode', uuid);
   }
 
@@ -423,11 +431,21 @@ export class ContentDatabaseService<E> extends Dexie {
   private _tableEntityGetByUuid<
     K extends MeshSchemaKey<E>,
     T extends MeshSchemaTypeMap<T>[K]
-  >(tableName: K, uuid: string): Promise<T> {
+  >(tableName: K, uuid: string): Promise<T | Error> {
     return this._tableGet(tableName)
-      .where(':uuid')
+      .where('uuid')
       .equals(uuid)
-      .first() as Dexie.Promise<T>;
+      .first()
+      .then(result => {
+        if (result) {
+          return result;
+        } else {
+          this.errorHandler.handleErrorEntityNotFound();
+          throw new Error(
+            `Entity with UUID ${uuid} not found in table ${tableName}.`
+          );
+        }
+      }) as Dexie.Promise<T>;
   }
 
   /**

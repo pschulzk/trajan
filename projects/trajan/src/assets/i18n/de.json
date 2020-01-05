@@ -35,5 +35,6 @@
   "anms.settings.title": "Einstellungen",
   "anms.title.long": "Trajan",
   "anms.title.short": "Trajan",
-  "anms.title.receipt": "Rezept"
+  "anms.title.receipt": "Rezept",
+  "anms.error.notfound.entity": "Daten konnten nicht gefunden werden"
 }

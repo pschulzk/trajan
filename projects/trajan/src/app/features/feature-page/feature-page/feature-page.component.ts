@@ -16,9 +16,8 @@ import { ContentDataService } from '../../../shared/providers/content-data/conte
 export class FeaturePageComponent implements OnInit {
   routeAnimationsElements = ROUTE_ANIMATIONS_ELEMENTS;
 
-  receipt$: Observable<NodeResponse<Receipt | undefined>>;
-
-  destroyed$ = new Subject<void>();
+  /** MeshNode or routing result if MeshNode not existing */
+  receipt$: Observable<NodeResponse<Receipt> | boolean | Error>;
 
   constructor(
     private router: Router,
@@ -29,14 +28,10 @@ export class FeaturePageComponent implements OnInit {
   ngOnInit() {
     // get receipt
     this.receipt$ = this.route.paramMap.pipe(
-      filter((params: ParamMap) => params.has('uuid')),
       map((params: ParamMap) => params.get('uuid')),
       switchMap((uuid: string) =>
         from(this.content.getReceipt(uuid)).pipe(
-          catchError(() => {
-            this.router.navigateByUrl('/feature-list');
-            return of(undefined);
-          })
+          catchError(() => this._navigateToHome())
         )
       )
     );
@@ -48,5 +43,9 @@ export class FeaturePageComponent implements OnInit {
 
   onContentItemClick(nodeUuid: string): void {
     this.router.navigate(['/' + nodeUuid]);
+  }
+
+  private _navigateToHome(): Promise<boolean> {
+    return this.router.navigateByUrl('/feature-list');
   }
 }

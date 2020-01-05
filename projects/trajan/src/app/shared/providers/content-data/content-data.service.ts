@@ -68,7 +68,7 @@ export class ContentDataService<E> {
     return this.getTagsOfTagFamily(this.tagFamilyReceiptsUuid);
   }
 
-  getReceipt(nodeUuid: string): Promise<NodeResponse<E>> {
+  getReceipt(nodeUuid: string): Promise<NodeResponse<E> | Error> {
     return this.contentDatabase.getMeshNode(nodeUuid);
   }
 
