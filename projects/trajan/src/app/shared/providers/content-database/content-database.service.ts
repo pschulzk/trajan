@@ -23,16 +23,39 @@ import { TagFamily } from '../../models/tag-family.model';
 import { Tag } from '../../models/tag.model';
 import { ConfigurationService } from '../../../core/configuration/configuration.service';
 
+export interface ContentDatabaseIndices {
+  meshSchemaResponse: 'uuid';
+  meshMicroschemaReference: 'jobUuid';
+  meshNodeFieldMicronode: 'uuid';
+  projectReferenceFromServer: 'uuid';
+  meshNodeReferenceFromServer: 'uuid';
+  userNodeReference: 'uuid';
+  meshUser: 'uuid';
+  meshRole: 'uuid';
+  meshGroup: 'uuid';
+  meshTagFamily: 'uuid';
+  meshTag: 'uuid' | 'tagFamily';
+  meshNodeChildrenFromServer: 'schemaUuid';
+  meshNode:
+    | 'uuid'
+    | 'schema'
+    | '[tags]'
+    | 'creator'
+    | 'editor'
+    | 'fields.content'
+    | 'fields.name';
+}
+
 /**
  * # ContentDatabaseService
  * Managing entities in IndexedDB
  * @param E is BTO interface encapsuled in MeshNode DTO
  */
-
 @Injectable({
   providedIn: 'root'
 })
 export class ContentDatabaseService<E> extends Dexie {
+  /** IndexedDB table definitions */
   storeConfig: { [key in MeshSchemaKey<E>]: string } = {
     meshSchemaResponse: 'uuid',
     meshMicroschemaReference: 'jobUuid',
@@ -46,29 +69,37 @@ export class ContentDatabaseService<E> extends Dexie {
     meshTagFamily: 'uuid',
     meshTag: 'uuid, tagFamily',
     meshNodeChildrenFromServer: 'schemaUuid',
-    meshNode: 'uuid, schema, [tags], creator, editor'
+    meshNode: [
+      'uuid',
+      'schema',
+      '[tags]',
+      'creator',
+      'editor',
+      'fields.content',
+      'fields.name'
+    ].join(',')
   };
 
+  /** This IndexedDB's string identifier */
   private _dataBaseName: string;
 
+  /** IndexedDB table instances */
   private _storeTables: Dexie.Table<MeshSchemaType<E>, string>[] = [];
 
+  /** Normalization utility class instance */
   private _normalizrSchemas: NormalizrMeshSchemas<E>;
+
+  ////////////////////////////////////////////////////////////////////////////////////////
 
   constructor(private configurationService: ConfigurationService) {
     // construct service with parameter from external configuration
     super(configurationService.configData.indexedDbName);
     this._dataBaseName = this.configurationService.configData.indexedDbName;
-
-    // initialize database
-    this.version(1).stores(this.storeConfig);
-    // initialize IndexedDB tables
-    this._storeTables = Object.keys(this.storeConfig).map(entityKey =>
-      this.table<MeshSchemaType<E>, string>(entityKey)
-    );
-
+    this._storeInit(1);
     this._normalizrSchemas = new NormalizrMeshSchemas<E>();
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
 
   async storeNodes(nodes: NodeResponse<E>[]): Promise<void[]> {
     const normalizedData = normalize(nodes, [this._normalizrSchemas.meshNode]);
@@ -93,33 +124,56 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._entityGetFromTableByUuid('meshSchemaResponse', uuid);
   }
 
-  async getMeshSchemaAll(filter?: {
-    attribute: keyof SchemaResponse;
-    value: any;
-  }): Promise<SchemaResponse[]> {
-    return this._entitiesGetFromTable('meshSchemaResponse', filter);
+  async getMeshSchemaAll(
+    filter?: {
+      attributes:
+        | ContentDatabaseIndices['meshSchemaResponse']
+        | Array<ContentDatabaseIndices['meshSchemaResponse']>;
+      values: any | any[];
+    },
+    filterFn?: (row: SchemaResponse) => boolean
+  ): Promise<SchemaResponse[]> {
+    return this._entitiesGetFromTable('meshSchemaResponse', filter, filterFn);
   }
 
   async getMeshMicroschema(uuid: string): Promise<MicroschemaReference> {
     return this._entityGetFromTableByUuid('meshMicroschemaReference', uuid);
   }
 
-  async getMeshMicroschemaAll(filter?: {
-    attribute: keyof MicroschemaReference;
-    value: any;
-  }): Promise<MicroschemaReference[]> {
-    return this._entitiesGetFromTable('meshMicroschemaReference', filter);
+  async getMeshMicroschemaAll(
+    filter?: {
+      attributes:
+        | ContentDatabaseIndices['meshMicroschemaReference']
+        | Array<ContentDatabaseIndices['meshMicroschemaReference']>;
+      values: any | any[];
+    },
+    filterFn?: (row: MicroschemaReference) => boolean
+  ): Promise<MicroschemaReference[]> {
+    return this._entitiesGetFromTable(
+      'meshMicroschemaReference',
+      filter,
+      filterFn
+    );
   }
 
   async getMeshNodeFieldMicronode(uuid: string): Promise<NodeFieldMicronode> {
     return this._entityGetFromTableByUuid('meshNodeFieldMicronode', uuid);
   }
 
-  async getMeshNodeFieldMicronodeAll(filter?: {
-    attribute: keyof NodeFieldMicronode;
-    value: any;
-  }): Promise<NodeFieldMicronode[]> {
-    return this._entitiesGetFromTable('meshNodeFieldMicronode', filter);
+  async getMeshNodeFieldMicronodeAll(
+    filter?: {
+      attributes:
+        | ContentDatabaseIndices['meshNodeFieldMicronode']
+        | Array<ContentDatabaseIndices['meshNodeFieldMicronode']>;
+      values: any | any[];
+    },
+    filterFn?: (row: NodeFieldMicronode) => boolean
+  ): Promise<NodeFieldMicronode[]> {
+    return this._entitiesGetFromTable(
+      'meshNodeFieldMicronode',
+      filter,
+      filterFn
+    );
   }
 
   async getProjectReferenceFromServer(
@@ -128,11 +182,20 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._entityGetFromTableByUuid('projectReferenceFromServer', uuid);
   }
 
-  async getProjectReferenceFromServerAll(filter?: {
-    attribute: keyof ProjectReferenceFromServer;
-    value: any;
-  }): Promise<ProjectReferenceFromServer[]> {
-    return this._entitiesGetFromTable('projectReferenceFromServer', filter);
+  async getProjectReferenceFromServerAll(
+    filter?: {
+      attributes:
+        | ContentDatabaseIndices['projectReferenceFromServer']
+        | Array<ContentDatabaseIndices['projectReferenceFromServer']>;
+      values: any | any[];
+    },
+    filterFn?: (row: ProjectReferenceFromServer) => boolean
+  ): Promise<ProjectReferenceFromServer[]> {
+    return this._entitiesGetFromTable(
+      'projectReferenceFromServer',
+      filter,
+      filterFn
+    );
   }
 
   async getMeshNodeReferenceFromServer(
@@ -141,91 +204,117 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._entityGetFromTableByUuid('meshNodeReferenceFromServer', uuid);
   }
 
-  async getMeshNodeReferenceFromServerAll(filter?: {
-    attribute: keyof NodeReferenceFromServer;
-    value: any;
-  }): Promise<NodeReferenceFromServer[]> {
-    return this._entitiesGetFromTable('meshNodeReferenceFromServer', filter);
+  async getMeshNodeReferenceFromServerAll(
+    filter?: {
+      attributes:
+        | ContentDatabaseIndices['meshNodeReferenceFromServer']
+        | Array<ContentDatabaseIndices['meshNodeReferenceFromServer']>;
+      values: any | any[];
+    },
+    filterFn?: (row: NodeReferenceFromServer) => boolean
+  ): Promise<NodeReferenceFromServer[]> {
+    return this._entitiesGetFromTable(
+      'meshNodeReferenceFromServer',
+      filter,
+      filterFn
+    );
   }
 
   async getUserNodeReference(uuid: string): Promise<UserNodeReference> {
     return this._entityGetFromTableByUuid('userNodeReference', uuid);
   }
 
-  async getUserNodeReferenceAll(filter?: {
-    attribute: keyof UserNodeReference;
-    value: any;
-  }): Promise<UserNodeReference[]> {
-    return this._entitiesGetFromTable('userNodeReference', filter);
+  async getUserNodeReferenceAll(
+    filter?: {
+      attributes:
+        | ContentDatabaseIndices['userNodeReference']
+        | Array<ContentDatabaseIndices['userNodeReference']>;
+      values: any | any[];
+    },
+    filterFn?: (row: UserNodeReference) => boolean
+  ): Promise<UserNodeReference[]> {
+    return this._entitiesGetFromTable('userNodeReference', filter, filterFn);
   }
 
   async getMeshUser(uuid: string): Promise<User> {
     return this._entityGetFromTableByUuid('meshUser', uuid);
   }
 
-  async getMeshUserAll(filter?: {
-    attribute: keyof User;
-    value: any;
-  }): Promise<User[]> {
-    return this._entitiesGetFromTable('meshUser', filter);
+  async getMeshUserAll(
+    filter?: {
+      attributes:
+        | ContentDatabaseIndices['meshUser']
+        | Array<ContentDatabaseIndices['meshUser']>;
+      values: any | any[];
+    },
+    filterFn?: (row: User) => boolean
+  ): Promise<User[]> {
+    return this._entitiesGetFromTable('meshUser', filter, filterFn);
   }
 
   async getMeshRole(uuid: string): Promise<Role> {
     return this._entityGetFromTableByUuid('meshRole', uuid);
   }
 
-  async getMeshRoleAll(filter?: {
-    attribute: keyof Role;
-    value: any;
-  }): Promise<Role[]> {
-    return this._entitiesGetFromTable('meshRole', filter);
+  async getMeshRoleAll(
+    filter?: {
+      attributes:
+        | ContentDatabaseIndices['meshRole']
+        | Array<ContentDatabaseIndices['meshRole']>;
+      values: any | any[];
+    },
+    filterFn?: (row: Role) => boolean
+  ): Promise<Role[]> {
+    return this._entitiesGetFromTable('meshRole', filter, filterFn);
   }
 
   async getMeshGroup(uuid: string): Promise<Group> {
     return this._entityGetFromTableByUuid('meshGroup', uuid);
   }
 
-  async getMeshGroupAll(filter?: {
-    attribute: keyof Group;
-    value: any;
-  }): Promise<Group[]> {
-    return this._entitiesGetFromTable('meshGroup', filter);
+  async getMeshGroupAll(
+    filter?: {
+      attributes:
+        | ContentDatabaseIndices['meshGroup']
+        | Array<ContentDatabaseIndices['meshGroup']>;
+      values: any | any[];
+    },
+    filterFn?: (row: Group) => boolean
+  ): Promise<Group[]> {
+    return this._entitiesGetFromTable('meshGroup', filter, filterFn);
   }
 
   async getMeshTagFamily(uuid: string): Promise<TagFamily> {
     return this._entityGetFromTableByUuid('meshTagFamily', uuid);
   }
 
-  async getMeshTagFamilyAll(filter?: {
-    attribute: keyof TagFamily;
-    value: any;
-  }): Promise<TagFamily[]> {
-    return this._entitiesGetFromTable('meshTagFamily', filter);
+  async getMeshTagFamilyAll(
+    filter?: {
+      attributes:
+        | ContentDatabaseIndices['meshTagFamily']
+        | Array<ContentDatabaseIndices['meshTagFamily']>;
+      values: any | any[];
+    },
+    filterFn?: (row: TagFamily) => boolean
+  ): Promise<TagFamily[]> {
+    return this._entitiesGetFromTable('meshTagFamily', filter, filterFn);
   }
 
   async getMeshTag(uuid: string): Promise<Tag> {
     return this._entityGetFromTableByUuid('meshTag', uuid);
   }
 
-  async getMeshTagAll(filter?: {
-    attribute: keyof Tag;
-    value: any;
-  }): Promise<Tag[]> {
-    return this._entitiesGetFromTable('meshTag', filter)
-      .then(success => success)
-      .catch(error =>
-        console.log(`!!! ${this.constructor.name}.error:`, error)
-      ) as Promise<Tag[]>;
+  async getMeshTagAll(
+    filter?: {
+      attributes:
+        | ContentDatabaseIndices['meshTag']
+        | Array<ContentDatabaseIndices['meshTag']>;
+      values: any | any[];
+    },
+    filterFn?: (row: Tag) => boolean
+  ): Promise<Tag[]> {
+    return this._entitiesGetFromTable('meshTag', filter, filterFn);
   }
-
-  // async getMeshTagsByTagFamily(
-  //   filter?: {
-  //     attribute: keyof Tag,
-  //     value: any,
-  //   },
-  // ): Promise<Tag[]> {
-  //   return this._entitiesGetFromTable('meshTag', filter);
-  // }
 
   async getMeshNodeChildrenFromServer(
     uuid: string
@@ -233,31 +322,57 @@ export class ContentDatabaseService<E> extends Dexie {
     return this._entityGetFromTableByUuid('meshNodeChildrenFromServer', uuid);
   }
 
-  async getMeshNodeChildrenFromServerAll(filter?: {
-    attribute: keyof NodeChildrenInfoFromServer;
-    value: any;
-  }): Promise<NodeChildrenInfoFromServer[]> {
-    return this._entitiesGetFromTable('meshNodeChildrenFromServer', filter);
+  async getMeshNodeChildrenFromServerAll(
+    filter?: {
+      attributes:
+        | ContentDatabaseIndices['meshNodeChildrenFromServer']
+        | Array<ContentDatabaseIndices['meshNodeChildrenFromServer']>;
+      values: any | any[];
+    },
+    filterFn?: (row: NodeChildrenInfoFromServer) => boolean
+  ): Promise<NodeChildrenInfoFromServer[]> {
+    return this._entitiesGetFromTable(
+      'meshNodeChildrenFromServer',
+      filter,
+      filterFn
+    );
   }
 
   async getMeshNode(uuid: string): Promise<MeshNode<E>> {
     return this._entityGetFromTableByUuid('meshNode', uuid);
   }
 
-  async getMeshNodeAll(filter?: {
-    attribute: keyof MeshNode<E>;
-    value: any;
-  }): Promise<MeshNode<E>[]> {
-    return this._entitiesGetFromTable('meshNode', filter);
+  async getMeshNodeAll(
+    filter?: {
+      attributes:
+        | ContentDatabaseIndices['meshNode']
+        | Array<ContentDatabaseIndices['meshNode']>;
+      values: any | any[];
+    },
+    filterFn?: (row: MeshNode<E>) => boolean
+  ): Promise<MeshNode<E>[]> {
+    return this._entitiesGetFromTable('meshNode', filter, filterFn);
   }
 
-  async getMeshNodesByTagUuids(tagUuids: string[]): Promise<MeshNode<E>[]> {
-    return this._tableGet('meshNode')
-      .where('tags')
-      .anyOf(tagUuids)
-      .toArray() as Dexie.Promise<MeshNode<E>[]>;
+  ////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Initialize IndexedDB.
+   * @param versionNumber of the database store to be initialized
+   */
+  private _storeInit(versionNumber: number): void {
+    // initialize database
+    this.version(versionNumber).stores(this.storeConfig);
+    // initialize IndexedDB tables
+    this._storeTables = Object.keys(this.storeConfig).map(entityKey =>
+      this.table<MeshSchemaType<E>, string>(entityKey)
+    );
   }
 
+  /**
+   * Add or update entities to store databases.
+   * @param payload Normalized Mesh entities to be added to IndexedDB
+   */
   private async _storeEntities(
     payload: NormalizedSchema<
       {
@@ -296,6 +411,10 @@ export class ContentDatabaseService<E> extends Dexie {
     return Promise.all(storeActions);
   }
 
+  /**
+   * Convenience table getter.
+   * @param tableName identifier to select table from store
+   */
   private _tableGet(
     tableName: MeshSchemaKey<E>
   ): Dexie.Table<MeshSchemaType<E>, string> {
@@ -305,6 +424,11 @@ export class ContentDatabaseService<E> extends Dexie {
     );
   }
 
+  /**
+   * Get single row from table.
+   * @param tableName identifier to select table from store
+   * @param uuid unique table row id
+   */
   private _entityGetFromTableByUuid<
     K extends MeshSchemaKey<E>,
     T extends MeshSchemaTypeMap<T>[K]
@@ -315,43 +439,56 @@ export class ContentDatabaseService<E> extends Dexie {
       .first() as Dexie.Promise<T>;
   }
 
-  // private _entitiesGetFromTable<
-  //   K extends MeshSchemaKey<E>,
-  //   T extends MeshSchemaTypeMap<T>[K]
-  // >(tableName: K): Promise<T[]> {
-  //   return this._tableGet(tableName).toArray() as Dexie.Promise<T[]>;
-  // }
-
+  /**
+   * Get multiple rows from table. If no filter is defined, get all table rows.
+   * @param tableName identifier to select table from store
+   * @param filter by attribute values (optional)
+   * @param filterFn to refine filtered result (using compound indices instead is recommended)
+   */
   private _entitiesGetFromTable<
     K extends MeshSchemaKey<E>,
     T extends MeshSchemaTypeMap<T>[K]
   >(
     tableName: K,
     filter?: {
-      attribute: keyof T;
-      value: any;
-    }
+      // attributes: keyof T | Array<keyof T>,
+      attributes: ContentDatabaseIndices[K] | Array<ContentDatabaseIndices[K]>;
+      values: any | any[];
+    },
+    filterFn?: (row: T) => boolean
   ): Promise<T[]> {
+    const table = this._tableGet(tableName);
+    let result: Dexie.Promise<any[]>;
     if (filter) {
-      console.log(
-        `!!! ${this.constructor.name}._entitiesGetFromTable:`,
-        filter
-      );
-      return this._tableGet(tableName)
-        .where(filter.attribute as string)
-        .equals(filter.value)
-        .toArray() as Dexie.Promise<T[]>;
-      // .catch(error => console.log(`!!! ${this.constructor.name}.error:`, filter)) as Dexie.Promise<T[]>;
+      if (Array.isArray(filter.values)) {
+        result = table
+          .where(filter.attributes)
+          .anyOfIgnoreCase(filter.values)
+          .and(filterFn ? filterFn : () => true)
+          .toArray();
+      } else {
+        result = table
+          .where(filter.attributes)
+          .equals(filter.values)
+          .and(filterFn ? filterFn : () => true)
+          .toArray();
+      }
     } else {
-      return this._tableGet(tableName).toArray() as Dexie.Promise<T[]>;
+      result = table.toArray();
     }
+    return result as Dexie.Promise<T[]>;
   }
 
+  /**
+   * Add or update row in table.
+   * @param tableName identifier to select table from store
+   * @param entity to be added or updated
+   */
   private async _tablePutEntity(
-    table: Dexie.Table<MeshSchemaType<E>, string>,
-    entities: MeshSchemaType<E>
+    tableName: Dexie.Table<MeshSchemaType<E>, string>,
+    entity: MeshSchemaType<E>
   ): Promise<void> {
-    return table.put(entities).then(
+    return tableName.put(entity).then(
       () => {},
       (error: Dexie.DexieError) => {
         throw new Error(error.inner.message);
@@ -359,6 +496,9 @@ export class ContentDatabaseService<E> extends Dexie {
     );
   }
 
+  /**
+   * Iterate through all tables and delete all their rows.
+   */
   private async _clearTables(): Promise<void[]> {
     const storeActions = this._storeTables.map(
       (table: Dexie.Table<MeshSchemaType<E>, string>) => table.clear()
@@ -366,6 +506,9 @@ export class ContentDatabaseService<E> extends Dexie {
     return Promise.all(storeActions);
   }
 
+  /**
+   * Delete entire store with all databases.
+   */
   private async _clearDatabase(): Promise<void> {
     Dexie.delete(this._dataBaseName);
   }

@@ -34,7 +34,8 @@ import {
   publishReplay,
   refCount,
   withLatestFrom,
-  delay
+  delay,
+  switchMap
 } from 'rxjs/operators';
 import { ContentDataService } from '../../../shared/providers/content-data/content-data.service';
 import { FormGroup, FormControl } from '@angular/forms';
@@ -42,7 +43,6 @@ import {
   MatAutocomplete,
   MatAutocompleteSelectedEvent,
   MatChipInputEvent,
-  MatAccordion,
   MatExpansionPanel
 } from '@angular/material';
 import { UiMemoryState } from '../../../core/ui-memory/ui-memory.model';
@@ -60,8 +60,8 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
   receiptIngredientTags$: Observable<TagResponse[]>;
   receiptIngredientTagsFiltered$: Observable<TagResponse[]>;
 
-  receiptCategories$: Observable<TagResponse[]>;
-  receipts$: Observable<NodeResponse<Receipt>[]>;
+  receiptCategories$: Promise<TagResponse[]>;
+  receipts: NodeResponse<Receipt>[];
 
   visible = true;
   selectable = true;
@@ -130,8 +130,8 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
       )
       .subscribe(tags => (this.allTags = tags));
 
-    this.receiptCategories$ = from(this.content.getReceiptCategories());
-    this.receipts$ = from(this.content.getReceiptsAll());
+    this.receiptCategories$ = this.content.getReceiptCategories();
+    this.content.getReceiptsAll().then(receipts => (this.receipts = receipts));
 
     this.filteredTags$ = this.inputTagIncludeControl.valueChanges.pipe(
       map((tag: string | null) =>
@@ -161,24 +161,30 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
     this.router.navigateByUrl(`/feature-page/${nodeUuid}`);
   }
 
-  getReceiptsOfReceiptCategory(
-    receiptCategoryName: string
+  getReceiptsOfReceiptCategoryUuid(
+    uuid: string
   ): Observable<NodeResponse<Receipt>[]> {
-    return combineLatest([this.receipts$, this.searchTerm$]).pipe(
-      map(([receipts, searchTerm]: [NodeResponse<Receipt>[], string]) => {
-        return receipts.filter(receipt => {
-          const matchesReceiptCategory =
-            receipt &&
-            receipt.tags &&
-            receipt.tags.some(tag => {
-              return tag.name === receiptCategoryName;
-            });
-          const matchesSearchTerm =
-            receipt && ['', null, undefined].includes(searchTerm)
-              ? true
-              : new RegExp(searchTerm, 'gi').test(receipt.fields.content);
+    // return combineLatest([this.receipts$, this.searchTerm$]).pipe(
+    // map(([receipts, searchTerm]: [NodeResponse<Receipt>[], string]) => {
+    return this.searchTerm$.pipe(
+      map((searchTerm: string) => {
+        return this.receipts.filter(receipt => {
+          if (
+            !receipt ||
+            !receipt.tags ||
+            !receipt.fields ||
+            !receipt.fields.content
+          ) {
+            return;
+          }
+          const matchesReceiptCategory = ((receipt.tags as unknown) as string[]).includes(
+            uuid
+          );
+          const matchesSearchTerm = ['', null, undefined].includes(searchTerm)
+            ? true
+            : new RegExp(searchTerm, 'gi').test(receipt.fields.content);
           const matchesIngredientTag =
-            receipt && this.tagsSelected.length === 0
+            this.tagsSelected.length === 0
               ? true
               : this.tagsSelected &&
                 this.tagsSelected.some(tagSelected => {
@@ -193,6 +199,15 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
       })
     );
   }
+
+  async test(): Promise<any> {
+    return this.content.getReceiptsAll();
+  }
+
+  // getReceiptsOfReceiptCategoryUuid(uuid: string): Promise<NodeResponse<Receipt>[]> {
+  //   const filterFn = (row: NodeResponse<Receipt>) => (row.tags as unknown as string[]).includes(uuid);
+  //   return this.content.getReceiptsAll(filterFn);
+  // }
 
   add(event: MatChipInputEvent): void {
     // Add fruit only when MatAutocomplete is not open

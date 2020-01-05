@@ -46,8 +46,8 @@
     </div>
   </div>
 
-  <!-- <pre class="row">
-    receiptCategories: {{ (receiptCategories$ | async | json) }}
+  <!-- <pre class="row" style="color: black !important">
+    MeshNodesALL: {{ (receipts | json) }}
   </pre> -->
 
   <div *ngIf="(receiptCategories$ | async) as receiptCategories; else loading" class="row">
@@ -67,9 +67,9 @@
             <mat-panel-title>
               <div class="panel-title">
                 <div>{{ receiptCategory.name }}</div>
-                <!-- <div *ngIf="(getReceiptsOfReceiptCategory(receiptCategory.name) | async)">
-                  {{ (getReceiptsOfReceiptCategory(receiptCategory.name) | async).length + ' Rezepte' }}
-                </div> -->
+                <div *ngIf="(getReceiptsOfReceiptCategoryUuid(receiptCategory.uuid) | async)">
+                  {{ (getReceiptsOfReceiptCategoryUuid(receiptCategory.uuid) | async).length + ' Rezepte' }}
+                </div>
               </div>
             </mat-panel-title>
           </mat-expansion-panel-header>
@@ -77,7 +77,7 @@
           <ng-template matExpansionPanelContent>
             <swiper>
               <mat-card
-                *ngFor="let receipt of getReceiptsOfReceiptCategory(receiptCategory.name) | async"
+                *ngFor="let receipt of getReceiptsOfReceiptCategoryUuid(receiptCategory.uuid) | async"
                 (click)="onContentItemClick(receipt.uuid)"
               >
                 <mat-card-title rtl>

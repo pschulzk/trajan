@@ -5,7 +5,6 @@ import {
   TagFamilyResponse,
   TagResponse
 } from '../../models/server-models';
-import { map, filter } from 'rxjs/operators';
 import { ContentApiService } from '../content-api/content-api.service';
 import { ContentDatabaseService } from '../content-database/content-database.service';
 import { MeshNode } from '../../models/node.model';
@@ -15,10 +14,6 @@ import { ConfigurationService } from '../../../core/configuration/configuration.
   providedIn: 'root'
 })
 export class ContentDataService<E> {
-  // tags$: Observable<TagResponse[]>;
-  // tagFamilies$: Observable<TagFamilyResponse[]>;
-  // receipts$: Observable<MeshNode<E>[]>;
-
   schemaReceiptUuid: string;
   tagFamilyIngedrientsUuid: string;
   tagFamilyReceiptsUuid: string;
@@ -68,8 +63,8 @@ export class ContentDataService<E> {
 
   getTagsOfTagFamily(tagFamilyUuid: string): Promise<TagResponse[]> {
     return this.contentDatabase.getMeshTagAll({
-      attribute: 'tagFamily',
-      value: tagFamilyUuid
+      attributes: 'tagFamily',
+      values: tagFamilyUuid
     });
     // return from(this.contentDatabase.getMeshTagAll()).pipe(
     //   filter(items => Array.isArray(items)),
@@ -86,21 +81,17 @@ export class ContentDataService<E> {
     // return this.store.select(state => state.entities.receipt[nodeUuid]);
   }
 
-  getReceiptsAll(): Promise<NodeResponse<E>[]> {
-    return this.contentDatabase.getMeshNodeAll({
-      attribute: 'schema',
-      value: this.schemaReceiptUuid
-    });
+  getReceiptsAll(
+    filterFn?: (row: MeshNode<E>) => boolean
+  ): Promise<NodeResponse<E>[]> {
+    return this.contentDatabase.getMeshNodeAll(
+      {
+        attributes: 'schema',
+        values: this.schemaReceiptUuid
+      },
+      filterFn
+    );
   }
-
-  // getReceiptsByTagname(tagName: string): Promise<NodeResponse<E>[]> {
-  //   return this.contentDatabase.getMeshNodesByTagUuids([tagName]);
-  //   // return from(this.getReceiptsAll()).pipe(
-  //   //   map(items =>
-  //   //     items.filter(item => item.tags.find(tag => tag.name === tagName))
-  //   //   )
-  //   // );
-  // }
 
   getNodeFieldBinaryUrl(nodeUuid: string, fieldName: string): string {
     return this.contentApi.getNodeFieldBinaryUrl(nodeUuid, fieldName);
