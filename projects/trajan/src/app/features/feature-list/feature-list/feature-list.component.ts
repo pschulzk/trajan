@@ -73,16 +73,17 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
   tagsSelected: string[] = [];
 
   formGroup: FormGroup;
-  @ViewChild('inputSearchTerm', { static: false }) inputSearchTerm: ElementRef<
-    HTMLInputElement
-  >;
+  @ViewChild('inputSearchTerm', { static: false })
+  inputSearchTerm: ElementRef<HTMLInputElement>;
+
   @ViewChild('inputTagsInclude', { static: false })
   inputTagsInclude: ElementRef<HTMLInputElement>;
-  @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete;
 
-  @ViewChildren(MatExpansionPanel) accordionFeatureList: QueryList<
-    MatExpansionPanel
-  >;
+  @ViewChild('auto', { static: false })
+  matAutocomplete: MatAutocomplete;
+
+  // @ViewChildren(MatExpansionPanel)
+  // accordionFeatureList: QueryList<MatExpansionPanel>;
 
   set searchTerm(v: string) {
     this._searchTerm$.next(v);

@@ -12,7 +12,7 @@ export interface AppConfig {
 }
 
 /**
- * @description Fetch external configuration JSON data from path
+ * Fetch external configuration JSON data from path
  * defined in `/<project>/src/environments/<environment>.appConfUrl`.
  */
 @Injectable()
