@@ -111,7 +111,9 @@ import { LoadingScreenComponent } from './loading-screen/loading-screen.componen
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
   slidesPerView: 'auto',
-  navigation: true
+  navigation: true,
+  lazy: false,
+  preloadImages: true
 };
 
 @NgModule({

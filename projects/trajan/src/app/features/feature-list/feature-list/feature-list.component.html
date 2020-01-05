@@ -74,7 +74,7 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
 
-          <ng-template matExpansionPanelContent>
+          <!-- <ng-template matExpansionPanelContent> -->
             <swiper>
               <mat-card
                 *ngFor="let receipt of getReceiptsOfReceiptCategoryUuid(receiptCategory.uuid) | async"
@@ -89,7 +89,7 @@
                 <img mat-card-image [src]="getNodeFieldBinary( receipt.uuid, 'thumbnail' )">
               </mat-card>
             </swiper>
-          </ng-template>
+          <!-- </ng-template> -->
 
         </mat-expansion-panel>
       </mat-accordion>
