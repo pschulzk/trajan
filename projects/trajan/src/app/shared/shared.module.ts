@@ -106,6 +106,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { RtlSupportDirective } from './rtl-support/rtl-support.directive';
 import { WINDOW_PROVIDERS } from './providers/window/window.service';
 import { ContentDatabaseService } from './providers/content-database/content-database.service';
+import { LoadingScreenComponent } from './loading-screen/loading-screen.component';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
@@ -145,7 +146,7 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
 
     FontAwesomeModule
   ],
-  declarations: [RtlSupportDirective],
+  declarations: [RtlSupportDirective, LoadingScreenComponent],
   providers: [
     ConnectionStateService,
     ContentApiService,
@@ -190,7 +191,8 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
     SwiperModule,
 
     FontAwesomeModule,
-    RtlSupportDirective
+    RtlSupportDirective,
+    LoadingScreenComponent
   ]
 })
 export class SharedModule {}

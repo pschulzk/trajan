@@ -14,8 +14,6 @@ import { authReducer } from './auth/auth.reducer';
 import { RouterStateUrl } from './router/router.state';
 import { settingsReducer } from './settings/settings.reducer';
 import { SettingsState } from './settings/settings.model';
-import { entitiesReducer } from './entities/entities.reducer';
-import { EntitiesState } from './entities/entities.model';
 import { UiMemoryState } from './ui-memory/ui-memory.model';
 import { UiMemoryReducer } from './ui-memory/ui-memory.reducer';
 
@@ -23,7 +21,6 @@ export const reducers: ActionReducerMap<AppState> = {
   auth: authReducer,
   settings: settingsReducer,
   router: routerReducer,
-  entities: entitiesReducer,
   uiMemory: UiMemoryReducer
 };
 
@@ -51,11 +48,6 @@ export const selectRouterState = createFeatureSelector<
   RouterReducerState<RouterStateUrl>
 >('router');
 
-export const selectEntitiesState = createFeatureSelector<
-  AppState,
-  EntitiesState
->('entities');
-
 export const selectUiMemoryState = createFeatureSelector<
   AppState,
   UiMemoryState
@@ -65,6 +57,5 @@ export interface AppState {
   auth: AuthState;
   settings: SettingsState;
   router: RouterReducerState<RouterStateUrl>;
-  entities: EntitiesState;
   uiMemory: UiMemoryState;
 }

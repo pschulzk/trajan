@@ -11,3 +11,8 @@ export const selectUiMemoryFeatureListTabOpenIndex = createSelector(
   selectUiMemoryState,
   (state: UiMemoryState) => state.featureListTabOpenIndex
 );
+
+export const selectUiMemoryIsLoading = createSelector(
+  selectUiMemoryState,
+  (state: UiMemoryState) => state.isLoading
+);

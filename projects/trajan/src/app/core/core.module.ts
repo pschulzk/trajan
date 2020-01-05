@@ -51,7 +51,6 @@ import {
   selectEffectiveTheme,
   selectSettingsStickyHeader
 } from './settings/settings.selectors';
-import { EntitiesEffects } from './entities/entities.effects';
 import { UiMemoryEffects } from './ui-memory/ui-memory.effects';
 import { ConfigurationService } from './configuration/configuration.service';
 
@@ -95,7 +94,6 @@ export function HttpLoaderFactory(http: HttpClient) {
       AuthEffects,
       SettingsEffects,
       GoogleAnalyticsEffects,
-      EntitiesEffects,
       UiMemoryEffects
     ]),
     environment.production

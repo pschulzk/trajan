@@ -5,9 +5,7 @@ import {
   OnDestroy,
   ElementRef,
   ViewChild,
-  AfterViewInit,
-  ViewChildren,
-  QueryList
+  AfterViewInit
 } from '@angular/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { ROUTE_ANIMATIONS_ELEMENTS, AppState } from '../../../core/core.module';
@@ -16,38 +14,19 @@ import {
   TagResponse
 } from '../../../shared/models/server-models';
 import { Receipt } from '../../../shared/models/receipt.model';
-import {
-  Observable,
-  combineLatest,
-  Subject,
-  BehaviorSubject,
-  from
-} from 'rxjs';
+import { Observable, Subject, BehaviorSubject, from } from 'rxjs';
 import { Router } from '@angular/router';
-import {
-  filter,
-  map,
-  tap,
-  takeUntil,
-  debounceTime,
-  first,
-  publishReplay,
-  refCount,
-  withLatestFrom,
-  delay,
-  switchMap
-} from 'rxjs/operators';
+import { filter, map, tap, takeUntil } from 'rxjs/operators';
 import { ContentDataService } from '../../../shared/providers/content-data/content-data.service';
 import { FormGroup, FormControl } from '@angular/forms';
 import {
   MatAutocomplete,
   MatAutocompleteSelectedEvent,
-  MatChipInputEvent,
-  MatExpansionPanel
+  MatChipInputEvent
 } from '@angular/material';
-import { UiMemoryState } from '../../../core/ui-memory/ui-memory.model';
-import { Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { actionUiMemoryFeatureListTabOpenIndexSet } from '../../../core/ui-memory/ui-memory.actions';
+import { selectUiMemoryIsLoading } from '../../../core/ui-memory/ui-memory.selectors';
 
 @Component({
   selector: 'anms-feature-list',
@@ -81,9 +60,6 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
 
   @ViewChild('auto', { static: false })
   matAutocomplete: MatAutocomplete;
-
-  // @ViewChildren(MatExpansionPanel)
-  // accordionFeatureList: QueryList<MatExpansionPanel>;
 
   set searchTerm(v: string) {
     this._searchTerm$.next(v);
@@ -165,8 +141,9 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
   getReceiptsOfReceiptCategoryUuid(
     uuid: string
   ): Observable<NodeResponse<Receipt>[]> {
-    // return combineLatest([this.receipts$, this.searchTerm$]).pipe(
-    // map(([receipts, searchTerm]: [NodeResponse<Receipt>[], string]) => {
+    if (!Array.isArray(this.receipts)) {
+      return;
+    }
     return this.searchTerm$.pipe(
       map((searchTerm: string) => {
         return this.receipts.filter(receipt => {
@@ -204,11 +181,6 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
   async test(): Promise<any> {
     return this.content.getReceiptsAll();
   }
-
-  // getReceiptsOfReceiptCategoryUuid(uuid: string): Promise<NodeResponse<Receipt>[]> {
-  //   const filterFn = (row: NodeResponse<Receipt>) => (row.tags as unknown as string[]).includes(uuid);
-  //   return this.content.getReceiptsAll(filterFn);
-  // }
 
   add(event: MatChipInputEvent): void {
     // Add fruit only when MatAutocomplete is not open

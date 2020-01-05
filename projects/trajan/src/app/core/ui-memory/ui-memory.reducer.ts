@@ -1,9 +1,13 @@
 import { UiMemoryState } from './ui-memory.model';
-import { actionUiMemoryFeatureListTabOpenIndexSet } from './ui-memory.actions';
+import {
+  actionUiMemoryFeatureListTabOpenIndexSet,
+  actionUiMemoryIsLoading
+} from './ui-memory.actions';
 import { Action, createReducer, on } from '@ngrx/store';
 
 export const initialState: UiMemoryState = {
-  featureListTabOpenIndex: null
+  featureListTabOpenIndex: null,
+  isLoading: true
 };
 
 /** Entity State reducer */
@@ -15,7 +19,11 @@ const reducer = createReducer(
       ...state,
       featureListTabOpenIndex
     })
-  )
+  ),
+  on(actionUiMemoryIsLoading, (state, { isLoading }) => ({
+    ...state,
+    isLoading
+  }))
 );
 
 /** Entity State reducer method */
