@@ -16,7 +16,7 @@ import {
 import { Receipt } from '../../../shared/models/receipt.model';
 import { Observable, Subject, BehaviorSubject, from } from 'rxjs';
 import { Router } from '@angular/router';
-import { filter, map, tap, takeUntil } from 'rxjs/operators';
+import { filter, map, takeUntil } from 'rxjs/operators';
 import { ContentDataService } from '../../../shared/providers/content-data/content-data.service';
 import { FormGroup, FormControl } from '@angular/forms';
 import {
@@ -24,9 +24,8 @@ import {
   MatAutocompleteSelectedEvent,
   MatChipInputEvent
 } from '@angular/material';
-import { Store, select } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { actionUiMemoryFeatureListTabOpenIndexSet } from '../../../core/ui-memory/ui-memory.actions';
-import { selectUiMemoryIsLoading } from '../../../core/ui-memory/ui-memory.selectors';
 
 @Component({
   selector: 'anms-feature-list',

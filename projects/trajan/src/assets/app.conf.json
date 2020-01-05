@@ -1,5 +1,6 @@
 {
   "apiPath": "/api/v2",
+  "contentFetchRetryDelay": 4000,
   "indexedDbName": "entities",
   "projectName": "trajan",
   "schemaReceiptUuid": "5f5df2afb62840ef9df2afb628d0ef6b",

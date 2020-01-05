@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, from } from 'rxjs';
+import { Observable, from, forkJoin } from 'rxjs';
 import {
   NodeResponse,
   TagFamilyResponse,
@@ -12,6 +12,7 @@ import { ConfigurationService } from '../../../core/configuration/configuration.
 import { Store } from '@ngrx/store';
 import { AppState } from '../../../core/core.state';
 import { actionUiMemoryIsLoading } from '../../../core/ui-memory/ui-memory.actions';
+import { tap, retry, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,7 @@ export class ContentDataService<E> {
   schemaReceiptUuid: string;
   tagFamilyIngedrientsUuid: string;
   tagFamilyReceiptsUuid: string;
+  private _contentFetchRetryDelay: number;
 
   constructor(
     private configurationService: ConfigurationService,
@@ -28,6 +30,7 @@ export class ContentDataService<E> {
     private store: Store<AppState>
   ) {
     // assign external values
+    this._contentFetchRetryDelay = this.configurationService.configData.contentFetchRetryDelay;
     this.schemaReceiptUuid = this.configurationService.configData.schemaReceiptUuid;
     this.tagFamilyIngedrientsUuid = this.configurationService.configData.tagFamilyIngedrientsUuid;
     this.tagFamilyReceiptsUuid = this.configurationService.configData.tagFamilyReceiptsUuid;
@@ -35,18 +38,22 @@ export class ContentDataService<E> {
     this.dataFetch();
   }
 
-  dataFetch(): any {
-    Promise.all([
-      this.contentApi.getTagFamiliesAll().toPromise(),
-      this.contentApi.getTagsAll().toPromise(),
-      this.contentApi.getNodesAll().toPromise()
-    ]).then(() =>
-      this.store.dispatch(actionUiMemoryIsLoading({ isLoading: false }))
-    );
+  /**
+   * Request all content data from external source and hide loading screen if ready.
+   */
+  dataFetch(): Promise<[TagFamilyResponse[], TagResponse[], MeshNode<E>[]]> {
+    return forkJoin([
+      this.contentApi
+        .getTagFamiliesAll()
+        .pipe(retry(this._contentFetchRetryDelay)),
+      this.contentApi.getTagsAll().pipe(retry(this._contentFetchRetryDelay)),
+      this.contentApi.getNodesAll().pipe(retry(this._contentFetchRetryDelay))
+    ])
+      .pipe(tap(() => this._isLoadingSet(false)))
+      .toPromise();
   }
 
   getTagFamilies(): Promise<TagFamilyResponse[]> {
-    // return this.tagFamilies$;
     return this.contentDatabase.getMeshTagFamilyAll();
   }
 
@@ -83,5 +90,9 @@ export class ContentDataService<E> {
 
   getReceiptIngredientTags(): Observable<TagResponse[]> {
     return from(this.getTagsOfTagFamily(this.tagFamilyIngedrientsUuid));
+  }
+
+  private _isLoadingSet(isLoading: boolean): void {
+    this.store.dispatch(actionUiMemoryIsLoading({ isLoading }));
   }
 }

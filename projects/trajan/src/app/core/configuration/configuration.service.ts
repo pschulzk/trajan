@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { environment as env } from '../../../environments/environment';
 
 export interface AppConfig {
+  apiPath: string;
+  contentFetchRetryDelay: number;
   indexedDbName: string;
+  projectName: string;
   schemaReceiptUuid: string;
   tagFamilyIngedrientsUuid: string;
   tagFamilyReceiptsUuid: string;
-  apiPath: string;
-  projectName: string;
 }
 
 /**
