@@ -1,6 +1,8 @@
 @import './styles-variables';
 @import url('https://fonts.googleapis.com/css?family=Kaushan+Script&display=swap');
 $font-logo: 'Kaushan Script', cursive;
+$color-green: #3e8342ed;
+$color-main: white;
 
 html,
 body {
@@ -79,7 +81,7 @@ mat-expansion-panel-header {
 .mat-expansion-panel-header-title,
 .mat-button-wrapper,
 .mat-expansion-indicator:after {
-  color: white !important;
+  color: $color-main !important;
 }
 
 .panel-title {
@@ -93,12 +95,12 @@ mat-form-field {
 }
 [class*='-theme'] .mat-form-field-appearance-legacy {
   .mat-form-field-label {
-    color: white !important;
-    text-shadow: 0 0 3px #1d1d1d80 !important;
+    color: $color-green !important;
+    // text-shadow: 0 0 3px #1d1d1d80 !important;
   }
   .mat-form-field-underline {
-    background-color: white !important;
-    box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.3);
+    background-color: $color-green !important;
+    // box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -111,16 +113,13 @@ mat-sidenav-container .toolbar .branding.center {
 }
 
 .nature-theme .mat-toolbar.mat-primary {
-  $color-green: #43a047ed;
-  $color: white;
-
   // color: $color;
   background: transparent !important;
   transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
 
   span,
   fa-icon {
-    color: $color;
+    color: $color-green;
     transition: color 0.2s ease-in-out;
   }
 
@@ -130,7 +129,7 @@ mat-sidenav-container .toolbar .branding.center {
 
     span,
     fa-icon {
-      color: white;
+      color: $color-main;
     }
   }
 }

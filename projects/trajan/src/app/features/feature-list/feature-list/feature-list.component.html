@@ -46,10 +46,6 @@
     </div>
   </div>
 
-  <!-- <pre class="row" style="color: black !important">
-    MeshNodesALL: {{ (receipts | json) }}
-  </pre> -->
-
   <div *ngIf="(receiptCategories$ | async) as receiptCategories; else loading" class="row">
     <div
       *ngFor="let receiptCategory of receiptCategories; let i = index"
