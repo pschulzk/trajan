@@ -14,7 +14,13 @@ import {
   TagResponse
 } from '../../../shared/models/server-models';
 import { Receipt } from '../../../shared/models/receipt.model';
-import { Observable, Subject, BehaviorSubject, from } from 'rxjs';
+import {
+  Observable,
+  Subject,
+  BehaviorSubject,
+  from,
+  combineLatest
+} from 'rxjs';
 import { Router } from '@angular/router';
 import { filter, map, takeUntil } from 'rxjs/operators';
 import { ContentDataService } from '../../../shared/providers/content-data/content-data.service';
@@ -26,6 +32,7 @@ import {
 } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { actionUiMemoryFeatureListTabOpenIndexSet } from '../../../core/ui-memory/ui-memory.actions';
+import { Tag } from '../../../shared/models/tag.model';
 
 @Component({
   selector: 'anms-feature-list',
@@ -46,7 +53,8 @@ export class FeatureListComponent implements OnDestroy, OnInit {
   addOnBlur = true;
   separatorKeysCodes: number[] = [ENTER, COMMA];
   inputTagIncludeControl = new FormControl();
-  allTags: string[] = [];
+  receiptIngredientTags: Tag[];
+  allTagsNames: string[] = [];
   filteredTags$: Observable<string[]>;
   tagsSelected: string[] = [];
 
@@ -95,6 +103,10 @@ export class FeatureListComponent implements OnDestroy, OnInit {
     );
 
     this.receiptIngredientTags$
+      .pipe(takeUntil(this.destroyed))
+      .subscribe(tags => (this.receiptIngredientTags = tags));
+
+    this.receiptIngredientTags$
       .pipe(
         map(
           tags =>
@@ -105,7 +117,7 @@ export class FeatureListComponent implements OnDestroy, OnInit {
         ),
         takeUntil(this.destroyed)
       )
-      .subscribe(tags => (this.allTags = tags));
+      .subscribe(tags => (this.allTagsNames = tags));
 
     this.receiptCategories$ = this.content.getReceiptCategories();
     this.content.getReceiptsAll().then(receipts => {
@@ -115,7 +127,7 @@ export class FeatureListComponent implements OnDestroy, OnInit {
 
     this.filteredTags$ = this.inputTagIncludeControl.valueChanges.pipe(
       map((tag: string | null) =>
-        tag ? this._filter(tag) : this.allTags.slice()
+        tag ? this._filter(tag) : this.allTagsNames.slice()
       )
     );
 
@@ -165,8 +177,11 @@ export class FeatureListComponent implements OnDestroy, OnInit {
               ? true
               : this.tagsSelected &&
                 this.tagsSelected.some(tagSelected => {
-                  return receipt.tags
-                    .map(tag => tag.name)
+                  return ((receipt.tags as unknown) as string[])
+                    .map(tag =>
+                      this.receiptIngredientTags.find(a => a.uuid === tag)
+                    )
+                    .map(tag => (tag ? tag.name : undefined))
                     .includes(tagSelected);
                 });
           return (
@@ -223,7 +238,7 @@ export class FeatureListComponent implements OnDestroy, OnInit {
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.allTags.filter(
+    return this.allTagsNames.filter(
       tag => tag.toLowerCase().indexOf(filterValue) === 0
     );
   }
