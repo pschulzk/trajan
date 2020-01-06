@@ -8,7 +8,7 @@
     "start:proxy": "ng serve --host 0.0.0.0 --live-reload true --proxy-config proxy-config.json",
     "start:prod": "npm run build:prod && npm run server",
     "build": "ng build",
-    "build:prod": "ng build --prod",
+    "build:prod": "ng build --prod && sh scripts/deploy.sh",
     "lint": "ng lint",
     "test": "ng lint && ng test --configuration=test",
     "watch": "ng test --configuration=test --browsers ChromeHeadless --watch",
