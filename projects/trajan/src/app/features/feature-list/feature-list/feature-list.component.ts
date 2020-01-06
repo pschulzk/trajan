@@ -5,7 +5,7 @@ import {
   OnDestroy,
   ElementRef,
   ViewChild,
-  AfterViewInit
+  ChangeDetectorRef
 } from '@angular/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { ROUTE_ANIMATIONS_ELEMENTS, AppState } from '../../../core/core.module';
@@ -32,7 +32,7 @@ import { actionUiMemoryFeatureListTabOpenIndexSet } from '../../../core/ui-memor
   templateUrl: './feature-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
+export class FeatureListComponent implements OnDestroy, OnInit {
   routeAnimationsElements = ROUTE_ANIMATIONS_ELEMENTS;
 
   receiptIngredientTags$: Observable<TagResponse[]>;
@@ -85,7 +85,8 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
   constructor(
     private router: Router,
     private content: ContentDataService<Receipt>,
-    private store: Store<AppState>
+    private store: Store<AppState>,
+    private changeDetectorRefn: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -107,7 +108,10 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
       .subscribe(tags => (this.allTags = tags));
 
     this.receiptCategories$ = this.content.getReceiptCategories();
-    this.content.getReceiptsAll().then(receipts => (this.receipts = receipts));
+    this.content.getReceiptsAll().then(receipts => {
+      this.receipts = receipts;
+      this.changeDetectorRefn.markForCheck();
+    });
 
     this.filteredTags$ = this.inputTagIncludeControl.valueChanges.pipe(
       map((tag: string | null) =>
@@ -118,10 +122,6 @@ export class FeatureListComponent implements AfterViewInit, OnDestroy, OnInit {
     this.panelIndexCurrent$ = this.store
       .select(state => state.uiMemory.featureListTabOpenIndex)
       .pipe(filter((index: number | undefined) => Number.isInteger(index)));
-  }
-
-  ngAfterViewInit(): void {
-    // this._featureListTabOpenIndexSet();
   }
 
   ngOnDestroy(): void {

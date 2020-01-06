@@ -1,11 +1,10 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { from, Observable } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { ROUTE_ANIMATIONS_ELEMENTS } from '../../../core/core.module';
-import { NodeResponse } from '../../../shared/models/server-models';
 import { Receipt } from '../../../shared/models/receipt.model';
-import { Observable, Subject, of, from } from 'rxjs';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { filter, map, switchMap, catchError } from 'rxjs/operators';
+import { NodeResponse } from '../../../shared/models/server-models';
 import { ContentDataService } from '../../../shared/providers/content-data/content-data.service';
 
 @Component({
