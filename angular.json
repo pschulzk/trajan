@@ -26,7 +26,8 @@
             "aot": false,
             "assets": [
               "projects/trajan/src/favicon.ico",
-              "projects/trajan/src/assets"
+              "projects/trajan/src/assets",
+              "projects/trajan/src/manifest.webmanifest"
             ],
             "styles": [
               "node_modules/material-design-icons-iconfont/dist/material-design-icons.css",
@@ -74,7 +75,9 @@
                   "maximumWarning": "100kb",
                   "maximumError": "200kb"
                 }
-              ]
+              ],
+              "serviceWorker": true,
+              "ngswConfigPath": "projects/trajan/ngsw-config.json"
             }
           }
         },
@@ -104,7 +107,8 @@
             "karmaConfig": "projects/trajan/karma.conf.js",
             "assets": [
               "projects/trajan/src/favicon.ico",
-              "projects/trajan/src/assets"
+              "projects/trajan/src/assets",
+              "projects/trajan/src/manifest.webmanifest"
             ],
             "styles": [
               "projects/trajan/src/styles-app-loading.scss",

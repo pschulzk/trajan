@@ -107,6 +107,7 @@ import { RtlSupportDirective } from './rtl-support/rtl-support.directive';
 import { WINDOW_PROVIDERS } from './providers/window/window.service';
 import { ContentDatabaseService } from './providers/content-database/content-database.service';
 import { LoadingScreenComponent } from './loading-screen/loading-screen.component';
+import { PwaService } from './providers/pwa/pwa.service';
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
@@ -158,6 +159,7 @@ const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
       useValue: DEFAULT_SWIPER_CONFIG
     },
     ContentDatabaseService,
+    PwaService,
     WINDOW_PROVIDERS
   ],
   exports: [

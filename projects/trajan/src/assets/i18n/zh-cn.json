@@ -11,6 +11,7 @@
   "anms.menu.logout": "退出",
   "anms.menu.settings": "设置",
   "anms.menu.receipts": "Receipts",
+  "anms.menu.install": "Install App",
   "anms.settings.animations.elements": "导航时页面上的元素渐入效果",
   "anms.settings.animations.page": "导航时整体页面过渡效果",
   "anms.settings.animations.title": "动画",

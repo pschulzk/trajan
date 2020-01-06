@@ -23,6 +23,7 @@ import {
 import { DOCUMENT } from '@angular/common';
 import { WINDOW } from '../shared/providers/window/window.service';
 import { throttleTime, map } from 'rxjs/operators';
+import { PwaService } from '../shared/providers/pwa/pwa.service';
 
 @Component({
   selector: 'anms-root',
@@ -57,7 +58,8 @@ export class AppComponent implements AfterViewInit, OnInit {
     @Inject(DOCUMENT) private document: Document,
     @Inject(WINDOW) private window: Window,
     private store: Store<AppState>,
-    private storageService: LocalStorageService
+    private storageService: LocalStorageService,
+    private pwaService: PwaService
   ) {}
 
   private static isIEorEdgeOrSafari(): boolean {
@@ -99,5 +101,13 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   onLanguageSelect({ value: language }) {
     this.store.dispatch(actionSettingsChangeLanguage({ language }));
+  }
+
+  appCanInstall(): boolean {
+    return this.pwaService.promptEvent ? true : false;
+  }
+
+  appInstall(): void {
+    this.pwaService.promptEvent.prompt();
   }
 }

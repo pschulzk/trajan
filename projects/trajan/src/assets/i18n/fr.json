@@ -11,6 +11,7 @@
   "anms.menu.logout": "Déconnexion",
   "anms.menu.settings": "Paramètres",
   "anms.menu.receipts": "Receipts",
+  "anms.menu.install": "Install App",
   "anms.settings.animations.elements": "Les éléments de la page de navigation glissent vers le haut",
   "anms.settings.animations.page": "Transition de la page entière lors de la navigation",
   "anms.settings.animations.title": "Animations",
