@@ -1,7 +1,7 @@
 const packageJson = require('../../../../package.json');
 
 export const environment = {
-  appConfUrl: '/assets/app.conf.js',
+  appConfUrl: '/assets/app.conf.json',
   appName: 'Selbermacher',
   envName: 'TEST',
   production: false,
