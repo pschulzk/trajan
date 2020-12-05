@@ -1,6 +1,6 @@
 # Project Codename Trajan
 
-This is a PoC implementation for a PWA (progressive web application) with a local database (IndexedDB) for offline use.
+This is a proof-of-concept implementation for a PWA (progressive web application) with a local database (IndexedDB) for offline use.
 
 ## Technologies
 * JavaScript framework: [Angular](https://angular.io/)
