@@ -114,10 +114,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     // construct global app configuration service, which will fetch external config data
     {
       provide: APP_INITIALIZER,
-      useFactory: (configService: ConfigurationService) => async () =>
-        await configService.configData$.then(() =>
-          configService.loadConfigurationData()
-        ),
+      useFactory: (configService: ConfigurationService) => () =>
+        configService.loadConfigurationData(),
       deps: [ConfigurationService, HttpClient],
       multi: true
     },
